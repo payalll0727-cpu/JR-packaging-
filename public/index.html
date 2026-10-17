@@ -1,0 +1,955 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JR Paper Tube &amp; Packaging — Surat</title>
+<script src="/i18n.js"></script>
+<script src="/invoice.js"></script>
+<style>
+  :root{
+    --navy:#1e3a5f; --navy-dark:#152a45; --amber:#f59e0b; --amber-dark:#d97706;
+    --bg:#f4f6f9; --card:#ffffff; --text:#1f2937; --muted:#6b7280;
+    --line:#e5e7eb; --green:#15803d; --red:#b91c1c; --wa:#25d366;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color:transparent;}
+  body{margin:0; font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+       background:var(--bg); color:var(--text); line-height:1.5;}
+  .wrap{max-width:1080px; margin:0 auto; padding:0 14px;}
+  .view{display:none; padding-bottom:90px;}
+  .view.active{display:block;}
+  h1{font-size:1.35rem; margin:0;} h2{font-size:1.15rem; margin:18px 0 10px;}
+  button{cursor:pointer; font:inherit;}
+  input,select,textarea{font:inherit; width:100%; padding:11px 12px; border:1px solid var(--line);
+    border-radius:10px; background:#fff;}
+  input:focus,select:focus,textarea:focus{outline:2px solid var(--amber); border-color:var(--amber);}
+  label{display:block; font-size:.85rem; font-weight:600; margin:12px 0 5px; color:#374151;}
+  .err{color:var(--red); font-size:.85rem; margin-top:8px; min-height:1.2em;}
+  .ok-msg{color:var(--green); font-size:.9rem; margin-top:8px;}
+  .btn{display:inline-block; border:none; border-radius:10px; padding:12px 18px; font-weight:700;
+    background:var(--amber); color:#1a1a1a; text-align:center;}
+  .btn:hover{background:var(--amber-dark);}
+  .btn.primary{background:var(--navy); color:#fff; box-shadow:0 2px 10px rgba(30,58,95,.28);}
+  .btn.primary:hover{background:var(--navy-dark);}
+  .btn.block{width:100%;}
+  .btn.ghost{background:#fff; border:1px solid var(--line); color:var(--text);}
+  .btn.danger{background:#fee2e2; color:var(--red);}
+  .btn.sm{padding:7px 12px; font-size:.85rem;}
+
+  header{background:linear-gradient(135deg,var(--navy-dark),var(--navy) 65%); color:#fff;
+    position:sticky; top:0; z-index:50; border-bottom:3px solid var(--amber);
+    box-shadow:0 2px 12px rgba(0,0,0,.12);}
+  .hrow{display:flex; align-items:center; justify-content:space-between; padding:10px 14px; gap:8px;}
+  .brand{font-weight:800; font-size:1rem; letter-spacing:.2px; line-height:1.25;}
+  .brand small{display:block; font-weight:400; font-size:.7rem; color:#cbd5e1;}
+  .hbtns{display:flex; gap:6px; align-items:center; flex-wrap:wrap; justify-content:flex-end;}
+  .cartbtn{position:relative; background:var(--amber); border:none; border-radius:10px;
+    padding:8px 12px; font-weight:700; color:#1a1a1a; font-size:.85rem;}
+  .cartcount{position:absolute; top:-8px; right:-8px; background:var(--red); color:#fff;
+    font-size:.7rem; font-weight:800; border-radius:50%; min-width:20px; height:20px;
+    display:flex; align-items:center; justify-content:center; padding:0 5px;}
+  .hbtn{background:transparent; border:1px solid #5b7ba3; color:#fff; border-radius:10px;
+    padding:7px 10px; font-size:.82rem;}
+  .langtoggle{display:flex; border:1px solid #5b7ba3; border-radius:10px; overflow:hidden;}
+  .langtoggle button{background:transparent; border:none; color:#cbd5e1; padding:7px 10px; font-size:.82rem; font-weight:700;}
+  .langtoggle button.on{background:var(--amber); color:#1a1a1a;}
+
+  #banner{display:none; background:#fef3c7; border-bottom:1px solid #fcd34d; color:#92400e;
+    font-size:.88rem; font-weight:600; text-align:center; padding:9px 14px;}
+
+  footer{background:var(--navy-dark); color:#cbd5e1; margin-top:30px; font-size:.85rem;}
+  footer .wrap{padding:22px 14px;}
+  footer strong{color:#fff;} footer a{color:var(--amber); text-decoration:none;}
+
+  #view-gate{min-height:80vh; display:none; align-items:center; justify-content:center; padding:24px 14px;}
+  #view-gate.active{display:flex;}
+  .gatecard{background:#fff; border-radius:16px; padding:28px 22px; max-width:420px; width:100%;
+    box-shadow:0 10px 30px rgba(0,0,0,.08); border-top:4px solid var(--amber);}
+  .gatecard .logo{font-size:2rem; font-weight:900; color:var(--navy); text-align:center;}
+  .gatecard .sub{text-align:center; color:var(--muted); font-size:.9rem; margin:6px 0 4px;}
+  .gatecard .addr{text-align:center; font-size:.78rem; color:var(--muted); margin-bottom:14px;}
+  .gate-note{font-size:.78rem; color:var(--muted); text-align:center; margin-top:12px;}
+  .langrow{display:flex; justify-content:center; margin-bottom:10px;}
+  .langrow .langtoggle button{color:var(--navy); border:1px solid var(--line);}
+  .langrow .langtoggle{border:none;}
+
+  .toolbar{position:sticky; top:56px; z-index:40; background:var(--bg); padding:10px 0;}
+  .searchrow{display:flex; gap:8px;}
+  .chips{display:flex; gap:8px; overflow-x:auto; padding:10px 0 4px; scrollbar-width:none;}
+  .chip{flex:0 0 auto; border:1px solid var(--line); background:#fff; border-radius:20px;
+    padding:7px 14px; font-size:.85rem;}
+  .chip.on{background:var(--navy); color:#fff; border-color:var(--navy);
+    box-shadow:0 2px 8px rgba(30,58,95,.28);}
+  .grid{display:grid; grid-template-columns:repeat(2,1fr); gap:12px; margin-top:6px;}
+  @media(min-width:720px){.grid{grid-template-columns:repeat(3,1fr);} h1{font-size:1.6rem;}}
+  @media(min-width:1020px){.grid{grid-template-columns:repeat(4,1fr);}}
+  .pcard{background:var(--card); border:1px solid var(--line); border-radius:16px; overflow:hidden;
+    display:flex; flex-direction:column; box-shadow:0 1px 4px rgba(15,35,60,.07);
+    transition:transform .15s ease, box-shadow .15s ease;}
+  .pcard:active{transform:scale(.985); box-shadow:0 4px 14px rgba(15,35,60,.12);}
+  .ptile{height:128px; display:flex; align-items:center; justify-content:center;
+    font-size:2rem; font-weight:800; color:#fff; overflow:hidden;}
+  .ptile img{width:100%; height:100%; object-fit:cover; display:block;}
+  .pbody{padding:10px 12px; display:flex; flex-direction:column; gap:4px; flex:1;}
+  .pcat{font-size:.7rem; color:var(--muted); text-transform:uppercase; letter-spacing:.5px;}
+  .pname{font-weight:700; font-size:.95rem;}
+  .pprice{font-weight:800; color:var(--navy); margin-top:auto;}
+  .pprice small{font-weight:400; color:var(--muted); font-size:.75rem;}
+  .pbtn{margin-top:8px; width:100%;}
+
+  .detail{background:#fff; border:1px solid var(--line); border-radius:16px; padding:18px; margin-top:14px;}
+  .detail .ptile{height:150px; border-radius:12px; font-size:3rem;}
+  .vopt{display:flex; align-items:center; gap:10px; border:1px solid var(--line); border-radius:10px;
+    padding:10px 12px; margin-top:8px; cursor:pointer;}
+  .vopt.on{border-color:var(--amber); background:#fffbeb;}
+  .vopt input{width:auto; accent-color:var(--amber-dark);}
+  .vopt .vp{margin-left:auto; font-weight:800; color:var(--navy);}
+  .qtyrow{display:flex; align-items:center; gap:12px; margin:14px 0;}
+  .stepper{display:flex; align-items:center; border:1px solid var(--line); border-radius:10px; overflow:hidden;}
+  .stepper button{width:40px; height:42px; border:none; background:#f3f4f6; font-size:1.2rem; font-weight:800;}
+  .stepper span{min-width:56px; text-align:center; font-weight:800;}
+  .total-line{display:flex; justify-content:space-between; font-size:1.05rem; font-weight:800; margin:10px 0;}
+  .backlink{background:none; border:none; color:var(--navy); font-weight:600; padding:10px 0;}
+
+  .cline{background:#fff; border:1px solid var(--line); border-radius:12px; padding:12px;
+    margin-top:10px; display:flex; gap:10px; align-items:center;}
+  .cline .info{flex:1;} .cline .nm{font-weight:700; font-size:.92rem;} .cline .vr{font-size:.8rem; color:var(--muted);}
+  .cline .stepper button{width:32px; height:34px;} .cline .stepper span{min-width:40px;}
+  .summary{background:#fff; border:1px solid var(--line); border-radius:12px; padding:14px; margin-top:14px;}
+  .srow{display:flex; justify-content:space-between; padding:4px 0; font-size:.95rem; gap:10px;}
+  .srow.grand{font-weight:800; font-size:1.1rem; border-top:1px solid var(--line); margin-top:8px; padding-top:10px;}
+  .empty{text-align:center; color:var(--muted); padding:50px 10px;}
+
+  .fopt{display:flex; gap:10px; border:1px solid var(--line); border-radius:12px; padding:12px;
+    margin-top:8px; cursor:pointer; background:#fff;}
+  .fopt.on{border-color:var(--amber); background:#fffbeb;}
+  .fopt input{width:auto; accent-color:var(--amber-dark);}
+  .fopt .fd{margin-left:auto; font-weight:800; color:var(--navy);}
+  .shopaddr{background:#f0f9ff; border:1px dashed #7dd3fc; border-radius:10px; padding:10px 12px;
+    font-size:.88rem; margin-top:10px;}
+
+  .confirm{background:#fff; border:1px solid var(--line); border-radius:16px; padding:30px 20px;
+    margin-top:20px; text-align:center;}
+  .confirm .big{font-size:3rem;}
+  .confirm .ordno{font-size:1.25rem; font-weight:800; color:var(--navy); margin:8px 0;}
+  .badge{display:inline-block; padding:4px 12px; border-radius:20px; font-size:.78rem; font-weight:700;}
+  .badge.ok{background:#dcfce7; color:var(--green);}
+  .badge.bad{background:#fee2e2; color:var(--red);}
+  .badge.info{background:#dbeafe; color:var(--navy);}
+
+  .modal{position:fixed; inset:0; background:rgba(0,0,0,.55); display:none; align-items:center;
+    justify-content:center; z-index:100; padding:16px;}
+  .modal.open{display:flex;}
+  .mbox{background:#fff; border-radius:16px; padding:24px 20px; max-width:420px; width:100%;
+    max-height:90vh; overflow-y:auto;}
+  .mbox h3{margin:0 0 6px;}
+  .testbanner{background:#fef3c7; border:1px dashed var(--amber-dark); color:#92400e; font-size:.82rem;
+    border-radius:10px; padding:10px 12px; margin:10px 0;}
+
+  .ocard{background:#fff; border:1px solid var(--line); border-radius:12px; padding:14px; margin-top:12px;}
+  .orow{display:flex; justify-content:space-between; gap:8px; font-size:.88rem; padding:3px 0;}
+  .oitems{font-size:.82rem; color:var(--muted); margin:6px 0;}
+
+  .wa-float{position:fixed; right:16px; bottom:16px; z-index:90; width:56px; height:56px;
+    background:var(--wa); border-radius:50%; display:none; align-items:center; justify-content:center;
+    box-shadow:0 4px 14px rgba(0,0,0,.25);}
+  .wa-float.show{display:flex;}
+  .wa-float svg{width:30px; height:30px; fill:#fff;}
+
+  /* ---------- invoice print ---------- */
+  #printwrap{display:none;}
+  .inv{font-family:Arial,sans-serif; color:#111; max-width:700px; margin:0 auto; background:#fff; padding:10px;}
+  .inv-head{text-align:center; border-bottom:2px solid #111; padding-bottom:10px; margin-bottom:10px;}
+  .inv-brand{font-size:2rem; font-weight:900;}
+  .inv-head h2{margin:4px 0;}
+  .inv-title{font-size:1.2rem; font-weight:800; margin-top:8px; text-transform:uppercase;}
+  .inv-meta{display:flex; flex-wrap:wrap; gap:6px 24px; margin-bottom:10px; font-size:.9rem;}
+  .inv-table{width:100%; border-collapse:collapse; font-size:.88rem;}
+  .inv-table th,.inv-table td{border:1px solid #999; padding:6px 8px; text-align:left;}
+  .inv-table .r,.inv-totals .r{text-align:right;}
+  .inv-totals{width:60%; margin-left:auto; border-collapse:collapse; font-size:.9rem; margin-top:8px;}
+  .inv-totals td{border:1px solid #999; padding:6px 8px;}
+  .inv-totals .grand{font-weight:800;}
+  .inv-words,.inv-note{font-size:.85rem; margin-top:10px;}
+  .inv-sign{text-align:right; margin-top:24px; font-size:.9rem;}
+  @media print{
+    body.printing > *:not(#printwrap){display:none !important;}
+    #printwrap{display:block !important;}
+  }
+</style>
+</head>
+<body>
+
+<div id="banner"></div>
+
+<!-- ================= ENTRY GATE ================= -->
+<section id="view-gate" class="view">
+  <div class="gatecard">
+    <div class="langrow"><div class="langtoggle">
+      <button data-lang="en" class="on">EN</button><button data-lang="hi">हिं</button>
+    </div></div>
+    <div class="logo">JR</div>
+    <div class="sub"><strong>JR Paper Tube &amp; Packaging</strong><br><span data-i18n="tagline"></span></div>
+    <label for="g-name" data-i18n="gate_name"></label>
+    <input id="g-name" data-i18n-ph="gate_name_ph" autocomplete="name">
+    <label for="g-phone" data-i18n="gate_phone"></label>
+    <input id="g-phone" data-i18n-ph="gate_phone_ph" inputmode="numeric" maxlength="10" autocomplete="tel">
+    <label for="g-email" data-i18n="gate_email"></label>
+    <input id="g-email" data-i18n-ph="gate_email_ph" inputmode="email" autocomplete="email">
+    <div class="err" id="g-err"></div>
+    <button class="btn primary block" id="g-go" style="margin-top:10px" data-i18n="gate_enter"></button>
+    <div class="gate-note" data-i18n="gate_note"></div>
+  </div>
+</section>
+
+<!-- ================= SHOP ================= -->
+<section id="view-shop" class="view">
+  <header>
+    <div class="wrap hrow">
+      <div class="brand">JR Paper Tube &amp; Packaging<small data-i18n="tagline"></small></div>
+      <div class="hbtns">
+        <div class="langtoggle"><button data-lang="en">EN</button><button data-lang="hi">हिं</button></div>
+        <button class="hbtn" id="h-quote" data-i18n="get_quote"></button>
+        <button class="hbtn" id="h-track" data-i18n="track_order"></button>
+        <button class="cartbtn" id="h-cart"><span data-i18n="cart"></span> <span class="cartcount" id="cartcount">0</span></button>
+      </div>
+    </div>
+  </header>
+  <div class="wrap">
+    <div class="toolbar">
+      <div class="searchrow"><input id="q" data-i18n-ph="search_ph"></div>
+      <div class="chips" id="chips"></div>
+    </div>
+    <div class="grid" id="grid"></div>
+    <div class="empty" id="no-results" style="display:none"></div>
+  </div>
+</section>
+
+<!-- ================= PRODUCT DETAIL ================= -->
+<section id="view-product" class="view">
+  <header>
+    <div class="wrap hrow">
+      <div class="brand">JR Paper Tube &amp; Packaging<small data-i18n="tagline"></small></div>
+      <div class="hbtns">
+        <div class="langtoggle"><button data-lang="en">EN</button><button data-lang="hi">हिं</button></div>
+        <button class="hbtn" data-go="shop" data-i18n="shop"></button>
+        <button class="cartbtn" id="h-cart2"><span data-i18n="cart"></span> <span class="cartcount" id="cartcount2">0</span></button>
+      </div>
+    </div>
+  </header>
+  <div class="wrap"><div class="detail" id="detail"></div></div>
+</section>
+
+<!-- ================= CART ================= -->
+<section id="view-cart" class="view">
+  <header>
+    <div class="wrap hrow">
+      <div class="brand">JR Paper Tube &amp; Packaging<small data-i18n="tagline"></small></div>
+      <div class="hbtns">
+        <div class="langtoggle"><button data-lang="en">EN</button><button data-lang="hi">हिं</button></div>
+        <button class="hbtn" data-go="shop" data-i18n="shop"></button>
+      </div>
+    </div>
+  </header>
+  <div class="wrap">
+    <h2 data-i18n="your_cart"></h2>
+    <div id="cartlines"></div>
+    <div class="summary" id="cartsummary" style="display:none"></div>
+    <button class="btn primary block" id="to-checkout" style="margin-top:14px; display:none" data-i18n="proceed_checkout"></button>
+  </div>
+</section>
+
+<!-- ================= CHECKOUT ================= -->
+<section id="view-checkout" class="view">
+  <header>
+    <div class="wrap hrow">
+      <div class="brand">JR Paper Tube &amp; Packaging<small data-i18n="tagline"></small></div>
+      <div class="hbtns">
+        <div class="langtoggle"><button data-lang="en">EN</button><button data-lang="hi">हिं</button></div>
+        <button class="hbtn" data-go="cart" id="co-back" data-i18n="cart"></button>
+      </div>
+    </div>
+  </header>
+  <div class="wrap">
+    <h2 data-i18n="checkout"></h2>
+    <div class="summary" id="co-summary"></div>
+    <label data-i18n="fulfillment"></label>
+    <div id="ff-opts"></div>
+    <div id="pickup-addr" class="shopaddr" style="display:none"></div>
+    <div id="delivery-fields">
+      <label for="c-addr" data-i18n="address_label"></label>
+      <textarea id="c-addr" rows="3" data-i18n-ph="address_ph"></textarea>
+      <div style="display:flex; gap:10px;">
+        <div style="flex:1"><label for="c-city" data-i18n="city"></label><input id="c-city" value="Surat"></div>
+        <div style="flex:1"><label for="c-pin" data-i18n="pincode"></label><input id="c-pin" inputmode="numeric" maxlength="6"></div>
+      </div>
+    </div>
+    <label for="c-name" data-i18n="full_name"></label>
+    <input id="c-name" autocomplete="name">
+    <label for="c-phone" data-i18n="mobile"></label>
+    <input id="c-phone" inputmode="numeric" maxlength="10" autocomplete="tel">
+    <div class="err" id="c-err"></div>
+    <button class="btn primary block" id="pay-btn" style="margin-top:14px" data-i18n="pay_online"></button>
+    <div class="gate-note" data-i18n="secure_note"></div>
+  </div>
+</section>
+
+<!-- ================= CONFIRMATION ================= -->
+<section id="view-confirm" class="view">
+  <header>
+    <div class="wrap hrow">
+      <div class="brand">JR Paper Tube &amp; Packaging<small data-i18n="tagline"></small></div>
+      <div class="hbtns">
+        <div class="langtoggle"><button data-lang="en">EN</button><button data-lang="hi">हिं</button></div>
+        <button class="hbtn" data-go="shop" data-i18n="shop"></button>
+      </div>
+    </div>
+  </header>
+  <div class="wrap"><div class="confirm" id="confirmbox"></div></div>
+</section>
+
+<!-- ================= TRACK / REORDER ================= -->
+<section id="view-track" class="view">
+  <header>
+    <div class="wrap hrow">
+      <div class="brand">JR Paper Tube &amp; Packaging<small data-i18n="tagline"></small></div>
+      <div class="hbtns">
+        <div class="langtoggle"><button data-lang="en">EN</button><button data-lang="hi">हिं</button></div>
+        <button class="hbtn" data-go="shop" data-i18n="shop"></button>
+      </div>
+    </div>
+  </header>
+  <div class="wrap">
+    <h2 data-i18n="track_title"></h2>
+    <label for="t-phone" data-i18n="track_phone"></label>
+    <input id="t-phone" inputmode="numeric" maxlength="10">
+    <label for="t-oid" data-i18n="track_order_id"></label>
+    <input id="t-oid" data-i18n-ph="track_order_id_ph" style="text-transform:uppercase">
+    <div class="err" id="t-err"></div>
+    <button class="btn primary block" id="t-go" style="margin-top:12px" data-i18n="track_btn"></button>
+    <div id="track-results"></div>
+  </div>
+</section>
+
+<!-- ================= QUOTE MODAL ================= -->
+<div class="modal" id="quotemodal">
+  <div class="mbox">
+    <h3 data-i18n="quote_title"></h3>
+    <label for="q-name" data-i18n="full_name"></label><input id="q-name">
+    <label for="q-phone" data-i18n="mobile"></label><input id="q-phone" inputmode="numeric" maxlength="10">
+    <label for="q-type" data-i18n="quote_type"></label><select id="q-type"></select>
+    <label for="q-dim" data-i18n="quote_dimensions"></label><input id="q-dim" data-i18n-ph="quote_dimensions_ph">
+    <label for="q-qty" data-i18n="quote_qty"></label><input id="q-qty" data-i18n-ph="quote_qty_ph">
+    <label for="q-notes" data-i18n="quote_notes"></label><textarea id="q-notes" rows="2" data-i18n-ph="quote_notes_ph"></textarea>
+    <div class="err" id="q-err"></div>
+    <div class="ok-msg" id="q-ok"></div>
+    <button class="btn primary block" id="q-send" style="margin-top:10px" data-i18n="quote_submit"></button>
+    <button class="btn ghost block" id="q-cancel" style="margin-top:8px" data-i18n="cancel"></button>
+  </div>
+</div>
+
+<!-- ================= MOCK PAYMENT DIALOG (test mode only) ================= -->
+<div class="modal" id="mockmodal">
+  <div class="mbox">
+    <h3>Test Payment</h3>
+    <div class="testbanner">⚠️ TEST MODE — no real money moves. Replace Razorpay keys in <code>config.js</code> and set <code>mock:false</code> to go live.</div>
+    <div class="srow"><span>Order</span><strong id="m-ord"></strong></div>
+    <div class="srow grand"><span>Amount</span><span id="m-amt"></span></div>
+    <div class="err" id="m-err"></div>
+    <button class="btn primary block" id="m-pay" style="margin-top:12px">Pay (test) →</button>
+    <button class="btn ghost block" id="m-fail" style="margin-top:8px">Simulate failed payment</button>
+    <button class="btn ghost block" id="m-cancel" style="margin-top:8px" data-i18n="cancel"></button>
+  </div>
+</div>
+
+<a class="wa-float" id="wa-float" target="_blank" rel="noopener" aria-label="WhatsApp">
+  <svg viewBox="0 0 32 32"><path d="M16 3C9.4 3 4 8.4 4 15c0 2.4.7 4.6 1.9 6.5L4 29l7.7-1.9c1.8 1 3.9 1.6 6.1 1.6h.1c6.6 0 12-5.4 12-12S22.6 3 16 3zm0 21.8c-1.9 0-3.7-.5-5.3-1.5l-.4-.2-4.6 1.1 1.2-4.5-.3-.4c-1.1-1.7-1.7-3.7-1.7-5.8 0-5.5 4.5-10 10.1-10 5.5 0 10 4.5 10 10s-4.5 10.3-10.2 10.3zm5.5-7.7c-.3-.2-1.8-.9-2-1-.3-.1-.5-.2-.7.2-.2.3-.8 1-.9 1.2-.2.2-.3.2-.6.1-.3-.2-1.3-.5-2.4-1.5-.9-.8-1.5-1.8-1.7-2-.2-.3 0-.5.1-.6l.5-.5c.1-.2.2-.3.3-.5.1-.2 0-.4 0-.5-.1-.2-.7-1.7-1-2.3-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.2-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.1.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.8-.7 2-1.4.2-.7.2-1.3.2-1.4-.1-.1-.3-.2-.6-.3z"/></svg>
+</a>
+
+<div id="printwrap"></div>
+
+<footer>
+  <div class="wrap">
+    <strong>JR Paper Tube &amp; Packaging</strong> · <span data-i18n="footer_note"></span><br>
+    📞 <a href="tel:919377513044">93775 13044</a> · <a href="tel:919998820009">99988 20009</a> · <a href="tel:919377667750">93776 67750</a>
+  </div>
+</footer>
+
+<script>
+"use strict";
+/* ================================================================
+   Storefront SPA. Views: gate → shop → product → cart → checkout → confirm → track
+   Visitor identity + cart + language persist in localStorage. Heartbeat every 15s.
+   ================================================================ */
+const $ = (id) => document.getElementById(id);
+const PHONE_RE = /^[6-9]\d{9}$/;
+const money = (n) => "₹" + Number(n).toLocaleString("en-IN");
+
+let CFG = null, CATALOG = null, ANNOUNCE = { en: "", hi: "" };
+let SKU = new Map();
+let visitor = JSON.parse(localStorage.getItem("jrpt_visitor") || "null");
+let cart = JSON.parse(localStorage.getItem("jrpt_cart") || "{}");
+let activeCat = "All", query = "";
+let detailSku = null, detailQty = 1;
+let pendingOrder = null;   // {order_id, order_number, razorpay_order_id, amount, phone}
+let fulfillment = "delivery";
+let draft = null;          // quote-converted draft order {token,...}
+let draftMode = false;
+
+/* ---------- i18n ---------- */
+function applyI18n() {
+  const lang = getLang();
+  document.documentElement.lang = lang === "hi" ? "hi" : "en";
+  document.querySelectorAll("[data-i18n]").forEach((el) => { el.textContent = t(el.dataset.i18n); });
+  document.querySelectorAll("[data-i18n-ph]").forEach((el) => { el.placeholder = t(el.dataset.i18nPh); });
+  document.querySelectorAll(".langtoggle button").forEach((b) =>
+    b.classList.toggle("on", b.dataset.lang === lang));
+  updateWaFloat();
+  if (CATALOG) { renderChips(); renderGrid(); }
+  if (currentView === "cart") renderCart();
+  if (currentView === "checkout") renderCheckout();
+  renderBanner();
+}
+document.querySelectorAll(".langtoggle button").forEach((b) =>
+  b.addEventListener("click", () => { setLang(b.dataset.lang); applyI18n(); }));
+
+function updateWaFloat() {
+  const a = $("wa-float");
+  if (!CFG || !visitor) { a.classList.remove("show"); return; }
+  a.classList.add("show");
+  a.href = `https://wa.me/${CFG.business.whatsapp}?text=${encodeURIComponent(waHelpText())}`;
+  a.setAttribute("aria-label", t("wa_help"));
+}
+function renderBanner() {
+  const txt = (getLang() === "hi" ? ANNOUNCE.hi : ANNOUNCE.en) || ANNOUNCE.en || ANNOUNCE.hi;
+  const b = $("banner");
+  if (txt) { b.textContent = "📢 " + txt; b.style.display = "block"; }
+  else b.style.display = "none";
+}
+
+/* ---------- view routing ---------- */
+const VIEWS = ["gate", "shop", "product", "cart", "checkout", "confirm", "track"];
+let currentView = "gate";
+function show(name) {
+  currentView = name;
+  VIEWS.forEach((v) => $("view-" + v).classList.toggle("active", v === name));
+  window.scrollTo(0, 0);
+  beat(name === "product" && detailSku ? "product:" + detailSku : name);
+}
+document.querySelectorAll("[data-go]").forEach((b) =>
+  b.addEventListener("click", () => show(b.dataset.go)));
+
+/* ---------- heartbeat (live-visitor tracking) ---------- */
+async function beat(page) {
+  if (!visitor) return;
+  try {
+    await fetch("/api/heartbeat", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ visitor_id: visitor.visitor_id, page }),
+    });
+  } catch (e) { /* offline-tolerant */ }
+}
+setInterval(() => beat(currentView === "product" && detailSku ? "product:" + detailSku : currentView), 15000);
+
+/* ---------- gate ---------- */
+$("g-go").addEventListener("click", async () => {
+  const name = $("g-name").value.trim();
+  let phone = $("g-phone").value.trim().replace(/[\s-]/g, "");
+  const email = $("g-email").value.trim();
+  const err = $("g-err");
+  if (name.length < 2) { err.textContent = t("err_name"); return; }
+  if (!PHONE_RE.test(phone)) { err.textContent = t("err_phone"); return; }
+  if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { err.textContent = t("err_email"); return; }
+  err.textContent = "";
+  $("g-go").disabled = true;
+  try {
+    const r = await fetch("/api/gate", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ name, phone, email }),
+    });
+    const d = await r.json();
+    if (!r.ok) {
+      // Blocked numbers get a polite message (bilingual from server).
+      err.textContent = d.error === "blocked" ? (getLang() === "hi" ? d.message_hi : d.message) : (d.message || d.error || "Entry failed.");
+      return;
+    }
+    visitor = d;
+    localStorage.setItem("jrpt_visitor", JSON.stringify(visitor));
+    enterAfterGate();
+  } catch (e) { err.textContent = e.message; }
+  finally { $("g-go").disabled = false; }
+});
+function enterAfterGate() {
+  updateWaFloat();
+  if (draft) { draftMode = true; renderCheckout(); show("checkout"); }
+  else show("shop");
+}
+
+/* ---------- catalog ---------- */
+const TILE_COLORS = ["#1e3a5f", "#0f766e", "#b45309", "#6d28d9", "#be123c", "#0369a1", "#4d7c0f"];
+function tileColor(id) { let h = 0; for (const c of id) h = (h * 31 + c.charCodeAt(0)) % 997; return TILE_COLORS[h % TILE_COLORS.length]; }
+function initials(name) { return name.split(/\s+/).slice(0, 2).map((w) => w[0]).join("").toUpperCase(); }
+function ptile(p) {
+  const esc = (s) => String(s).replace(/"/g, "&quot;");
+  return p.image
+    ? `<div class="ptile"><img src="${esc(p.image)}" alt="${esc(p.name)}" loading="lazy"></div>`
+    : `<div class="ptile" style="background:${tileColor(p.id)}">${initials(p.name)}</div>`;
+}
+function priceRange(p) {
+  const ps = p.variants.map((v) => v.price);
+  const lo = Math.min(...ps), hi = Math.max(...ps);
+  return lo === hi ? money(lo) : `${money(lo)} – ${money(hi)}`;
+}
+function renderChips() {
+  const cats = [t("all_cats"), ...CATALOG.categories];
+  $("chips").innerHTML = cats.map((c) => {
+    const val = c === t("all_cats") ? "All" : c;
+    return `<button class="chip${(activeCat === "All" ? t("all_cats") : activeCat) === c ? " on" : ""}" data-cat="${val}">${c === "All" ? t("all_cats") : catName(c)}</button>`;
+  }).join("");
+  document.querySelectorAll(".chip").forEach((ch) =>
+    ch.addEventListener("click", () => { activeCat = ch.dataset.cat; renderChips(); renderGrid(); }));
+}
+function renderGrid() {
+  const q = query.trim().toLowerCase();
+  const list = CATALOG.products.filter((p) =>
+    (activeCat === "All" || p.category === activeCat) &&
+    (!q || (p.name + " " + p.category + " " + p.description).toLowerCase().includes(q)));
+  $("no-results").style.display = list.length ? "none" : "block";
+  $("grid").innerHTML = list.map((p) => `
+    <div class="pcard">
+      ${ptile(p)}
+      <div class="pbody">
+        <div class="pcat">${catName(p.category)}</div>
+        <div class="pname">${p.name}</div>
+        <div class="pprice">${priceRange(p)} <small>${t("per")} ${p.variants[0].unit}</small></div>
+        <button class="btn ghost pbtn" data-view="${p.id}">${t("view_add")}</button>
+      </div>
+    </div>`).join("");
+  document.querySelectorAll("[data-view]").forEach((b) =>
+    b.addEventListener("click", () => openProduct(b.dataset.view)));
+}
+$("q").addEventListener("input", (e) => { query = e.target.value; renderGrid(); });
+
+/* ---------- product detail ---------- */
+function openProduct(id) {
+  const p = CATALOG.products.find((x) => x.id === id);
+  if (!p || !p.variants.length) return;
+  detailQty = 1;
+  detailSku = p.variants[0].sku;
+  const d = $("detail");
+  d.innerHTML = `
+    <button class="backlink" id="d-back">${t("back_products")}</button>
+    ${ptile(p)}
+    <div class="pcat" style="margin-top:12px">${catName(p.category)}</div>
+    <h2 style="margin:4px 0">${p.name}</h2>
+    <p style="color:var(--muted); font-size:.92rem">${p.description}</p>
+    <label>${t("choose_variant")}</label>
+    <div id="vopts">${p.variants.map((v, i) => `
+      <label class="vopt${i === 0 ? " on" : ""}">
+        <input type="radio" name="vopt" value="${v.sku}"${i === 0 ? " checked" : ""}>
+        <span>${v.label} <small style="color:var(--muted)">(${t("per")} ${v.unit})</small></span>
+        <span class="vp">${money(v.price)}</span>
+      </label>`).join("")}</div>
+    <div class="qtyrow">
+      <span style="font-weight:600">${t("quantity")}</span>
+      <div class="stepper">
+        <button id="q-minus">−</button><span id="q-val">1</span><button id="q-plus">+</button>
+      </div>
+      <span style="color:var(--muted); font-size:.85rem" id="q-unit"></span>
+    </div>
+    <div class="total-line"><span>${t("total")}</span><span id="d-total"></span></div>
+    <button class="btn primary block" id="d-add">${t("add_to_cart")}</button>
+    <button class="btn ghost block" id="d-quote" style="margin-top:8px">${t("get_quote")} — ${t("quote_custom")}</button>`;
+  const refresh = () => {
+    const v = SKU.get(detailSku).variant;
+    $("q-val").textContent = detailQty;
+    $("q-unit").textContent = v.unit;
+    $("d-total").textContent = money(v.price * detailQty);
+  };
+  d.querySelectorAll('input[name="vopt"]').forEach((r) =>
+    r.addEventListener("change", () => {
+      detailSku = r.value;
+      d.querySelectorAll(".vopt").forEach((o) => o.classList.toggle("on", o.querySelector("input").checked));
+      refresh();
+    }));
+  $("d-back").onclick = () => show("shop");
+  $("q-minus").onclick = () => { if (detailQty > 1) detailQty--; refresh(); };
+  $("q-plus").onclick = () => { if (detailQty < 10000) detailQty++; refresh(); };
+  $("d-add").onclick = () => {
+    cart[detailSku] = Math.min(10000, (cart[detailSku] || 0) + detailQty);
+    saveCart(); updateBadges();
+    $("d-add").textContent = t("added");
+    setTimeout(() => show("cart"), 450);
+  };
+  $("d-quote").onclick = () => openQuote(p.category);
+  refresh();
+  show("product");
+}
+
+/* ---------- cart ---------- */
+function saveCart() { localStorage.setItem("jrpt_cart", JSON.stringify(cart)); }
+function cartCount() { return Object.values(cart).reduce((a, b) => a + b, 0); }
+function updateBadges() {
+  const n = cartCount();
+  ["cartcount", "cartcount2"].forEach((id) => { const el = $(id); if (el) el.textContent = n; });
+}
+function cartLines() {
+  const out = [];
+  for (const [sku, qty] of Object.entries(cart)) {
+    if (!SKU.has(sku)) continue;
+    const { product, variant } = SKU.get(sku);
+    out.push({ sku, qty, name: product.name, variant_label: variant.label, unit: variant.unit, price: variant.price });
+  }
+  return out;
+}
+function cartTotals(ff) {
+  const lines = cartLines();
+  const subtotal = lines.reduce((a, l) => a + l.price * l.qty, 0);
+  const delivery = !lines.length || ff === "pickup" ? 0
+    : (subtotal >= CFG.delivery.free_above ? 0 : CFG.delivery.charge);
+  return { lines, subtotal, delivery, total: subtotal + delivery };
+}
+function renderCart() {
+  const { lines, subtotal, delivery, total } = cartTotals(fulfillment);
+  const box = $("cartlines");
+  if (!lines.length) {
+    box.innerHTML = `<div class="empty">${t("cart_empty")}<br><br><button class="btn primary" id="empty-browse">${t("browse_products")}</button></div>`;
+    $("empty-browse").onclick = () => show("shop");
+    $("cartsummary").style.display = "none"; $("to-checkout").style.display = "none";
+    return;
+  }
+  box.innerHTML = lines.map((l) => `
+    <div class="cline">
+      <div class="info">
+        <div class="nm">${l.name}</div>
+        <div class="vr">${l.variant_label} · ${money(l.price)} ${t("per")} ${l.unit}</div>
+        <div style="font-weight:800; margin-top:4px">${money(l.price * l.qty)}</div>
+      </div>
+      <div class="stepper">
+        <button data-dec="${l.sku}">−</button><span>${l.qty}</span><button data-inc="${l.sku}">+</button>
+      </div>
+      <button class="btn danger" data-del="${l.sku}" style="padding:8px 10px">✕</button>
+    </div>`).join("");
+  box.querySelectorAll("[data-inc]").forEach((b) => b.onclick = () => { cart[b.dataset.inc]++; saveCart(); updateBadges(); renderCart(); });
+  box.querySelectorAll("[data-dec]").forEach((b) => b.onclick = () => {
+    const s = b.dataset.dec; cart[s]--; if (cart[s] <= 0) delete cart[s];
+    saveCart(); updateBadges(); renderCart();
+  });
+  box.querySelectorAll("[data-del]").forEach((b) => b.onclick = () => { delete cart[b.dataset.del]; saveCart(); updateBadges(); renderCart(); });
+  $("cartsummary").style.display = "block";
+  $("cartsummary").innerHTML = `
+    <div class="srow"><span>${t("subtotal")}</span><span>${money(subtotal)}</span></div>
+    <div class="srow"><span>${t("delivery")}</span><span>${delivery === 0 ? t("free") : money(delivery)}</span></div>
+    <div class="srow grand"><span>${t("grand_total")}</span><span>${money(total)}</span></div>
+    ${delivery > 0 && CFG.delivery.charge > 0 ? `<div style="font-size:.8rem;color:var(--muted)">${t("delivery_charge_note")}</div>` : ""}
+    ${delivery > 0 && CFG.delivery.charge === 0 && subtotal < CFG.delivery.free_above ? `<div style="font-size:.8rem;color:var(--muted)">${t("free_delivery_note")}</div>` : ""}`;
+  $("to-checkout").style.display = "block";
+}
+$("to-checkout").addEventListener("click", () => { draftMode = false; draft = null; renderCheckout(); show("checkout"); });
+$("h-cart").addEventListener("click", () => { renderCart(); show("cart"); });
+$("h-cart2").addEventListener("click", () => { renderCart(); show("cart"); });
+
+/* ---------- checkout ---------- */
+function renderCheckout() {
+  const isDraft = draftMode && draft;
+  const { lines, subtotal, delivery, total } = isDraft
+    ? (() => { const lt = draft.price * draft.qty;
+        const del = fulfillment === "pickup" ? 0 : (lt >= CFG.delivery.free_above ? 0 : CFG.delivery.charge);
+        return { lines: [{ name: draft.item_label, variant_label: t("draft_item"), unit: "", price: draft.price, qty: draft.qty }], subtotal: lt, delivery: del, total: lt + del }; })()
+    : cartTotals(fulfillment);
+  $("co-summary").innerHTML = `
+    <div class="srow"><span>${t("items")} (${isDraft ? draft.qty : cartCount()})</span><span>${money(subtotal)}</span></div>
+    <div class="srow"><span>${t("delivery")}</span><span>${delivery === 0 ? t("free") : money(delivery)}</span></div>
+    <div class="srow grand"><span>${t("to_pay")}</span><span>${money(total)}</span></div>`;
+  if (isDraft) {
+    $("co-summary").insertAdjacentHTML("afterbegin",
+      `<div class="srow"><span><strong>${t("draft_title")}</strong></span></div>
+       <div class="srow"><span>${draft.item_label}</span><span>${draft.qty} × ${money(draft.price)}</span></div>`);
+  }
+  $("ff-opts").innerHTML = `
+    <label class="fopt${fulfillment === "pickup" ? " on" : ""}">
+      <input type="radio" name="ff" value="pickup"${fulfillment === "pickup" ? " checked" : ""}>
+      <span><strong>${t("pickup")}</strong><br><small style="color:var(--muted)">${t("pickup_from")} ${CFG.business.address}</small></span>
+      <span class="fd">${t("pickup_free")}</span>
+    </label>
+    <label class="fopt${fulfillment === "delivery" ? " on" : ""}">
+      <input type="radio" name="ff" value="delivery"${fulfillment === "delivery" ? " checked" : ""}>
+      <span><strong>${t("delivery_opt")}</strong></span>
+      <span class="fd">${delivery === 0 ? t("free") : money(delivery)}</span>
+    </label>`;
+  document.querySelectorAll('input[name="ff"]').forEach((r) =>
+    r.addEventListener("change", () => { fulfillment = r.value; renderCheckout(); }));
+  $("pickup-addr").style.display = fulfillment === "pickup" ? "block" : "none";
+  $("pickup-addr").innerHTML = `<strong>${t("pickup_from")}</strong><br>${CFG.business.address}<br>📞 ${CFG.business.phones.join(" · ")}`;
+  $("delivery-fields").style.display = fulfillment === "pickup" ? "none" : "block";
+  $("co-back").style.display = isDraft ? "none" : "";
+  $("co-back").onclick = () => show(isDraft ? "shop" : "cart");
+  if (visitor) { $("c-name").value = isDraft ? draft.name : visitor.name; $("c-phone").value = isDraft ? draft.phone : visitor.phone; }
+}
+
+$("pay-btn").addEventListener("click", async () => {
+  const name = $("c-name").value.trim();
+  let phone = $("c-phone").value.trim().replace(/[\s-]/g, "");
+  const address = $("c-addr").value.trim();
+  const city = $("c-city").value.trim();
+  const pincode = $("c-pin").value.trim();
+  const err = $("c-err");
+  if (name.length < 2) { err.textContent = t("err_name"); return; }
+  if (!PHONE_RE.test(phone)) { err.textContent = t("err_phone"); return; }
+  if (fulfillment === "delivery") {
+    if (address.length < 8) { err.textContent = t("err_addr"); return; }
+    if (city.length < 2) { err.textContent = t("err_city"); return; }
+    if (!/^\d{6}$/.test(pincode)) { err.textContent = t("err_pin"); return; }
+  }
+  err.textContent = "";
+  const btn = $("pay-btn"); btn.disabled = true; btn.textContent = t("creating_order");
+  try {
+    const body = { visitor_id: visitor.visitor_id, name, phone, address, city, pincode, fulfillment };
+    if (draftMode && draft) body.draft_token = draft.token;
+    else {
+      const items = Object.entries(cart).map(([sku, qty]) => ({ sku, qty }));
+      if (!items.length) throw new Error(t("cart_empty"));
+      body.items = items;
+    }
+    const r = await fetch("/api/orders", {
+      method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(body),
+    });
+    const d = await r.json();
+    if (!r.ok) throw new Error(d.error || "Order failed.");
+    pendingOrder = { order_id: d.order_id, order_number: d.order_number, razorpay_order_id: d.razorpay_order_id, amount: d.amount, phone };
+    if (d.mock) openMockPayment(d);
+    else await openLivePayment(d, name, phone);
+  } catch (e) { err.textContent = e.message; }
+  btn.disabled = false; btn.textContent = t("pay_online");
+});
+
+function loadRazorpayJs() {
+  return new Promise((resolve, reject) => {
+    if (window.Razorpay) return resolve();
+    const s = document.createElement("script");
+    s.src = "https://checkout.razorpay.com/v1/checkout.js";
+    s.onload = resolve; s.onerror = () => reject(new Error("Could not load Razorpay."));
+    document.head.appendChild(s);
+  });
+}
+function openMockPayment(d) {
+  $("m-ord").textContent = d.order_number;
+  $("m-amt").textContent = money(d.amount);
+  $("m-err").textContent = "";
+  $("mockmodal").classList.add("open");
+}
+$("m-cancel").onclick = () => { $("mockmodal").classList.remove("open"); markPaymentFailed(); };
+$("m-fail").onclick = async () => {
+  $("mockmodal").classList.remove("open");
+  await markPaymentFailed();
+  showConfirm(false, "Payment failed (simulated). No money was charged.");
+};
+$("m-pay").onclick = async () => {
+  $("m-pay").disabled = true;
+  try {
+    const r = await fetch(`/api/orders/${pendingOrder.order_id}/verify`, {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        razorpay_order_id: pendingOrder.razorpay_order_id,
+        razorpay_payment_id: "pay_mock_" + Date.now().toString(36),
+        razorpay_signature: "mock",
+      }),
+    });
+    const d = await r.json();
+    if (!r.ok) throw new Error(d.error || "Verification failed.");
+    $("mockmodal").classList.remove("open");
+    cart = {}; saveCart(); updateBadges(); draftMode = false; draft = null;
+    showConfirm(true, d.order_number, pendingOrder.amount);
+  } catch (e) { $("m-err").textContent = e.message; }
+  $("m-pay").disabled = false;
+};
+async function openLivePayment(d, name, phone) {
+  await loadRazorpayJs();
+  return new Promise((resolve) => {
+    const rzp = new Razorpay({
+      key: d.razorpay_key_id, amount: Math.round(d.amount * 100), currency: "INR",
+      name: CFG.business.name, description: "Order " + d.order_number,
+      order_id: d.razorpay_order_id, prefill: { name, contact: phone }, theme: { color: "#1e3a5f" },
+      handler: async (resp) => {
+        try {
+          const vr = await fetch(`/api/orders/${pendingOrder.order_id}/verify`, {
+            method: "POST", headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              razorpay_order_id: resp.razorpay_order_id,
+              razorpay_payment_id: resp.razorpay_payment_id,
+              razorpay_signature: resp.razorpay_signature,
+            }),
+          });
+          const vd = await vr.json();
+          if (!vr.ok) throw new Error(vd.error || "Verification failed.");
+          cart = {}; saveCart(); updateBadges(); draftMode = false; draft = null;
+          showConfirm(true, vd.order_number, pendingOrder.amount);
+        } catch (e) { showConfirm(false, e.message); }
+        resolve();
+      },
+      modal: { ondismiss: async () => { await markPaymentFailed(); showConfirm(false, t("order_failed")); resolve(); } },
+    });
+    rzp.on("payment.failed", async () => { await markPaymentFailed(); showConfirm(false, t("order_failed")); resolve(); });
+    rzp.open();
+  });
+}
+async function markPaymentFailed() {
+  if (!pendingOrder) return;
+  try { await fetch(`/api/orders/${pendingOrder.order_id}/payment-failed`, { method: "POST" }); } catch (e) {}
+}
+
+/* ---------- confirmation + invoice ---------- */
+function showConfirm(ok, orderNumberOrMsg, amount) {
+  const box = $("confirmbox");
+  if (ok) {
+    box.innerHTML = `
+      <div class="big">✅</div>
+      <div><span class="badge ok">${t("order_success")}</span></div>
+      <div class="ordno">${t("order_id")} ${orderNumberOrMsg}</div>
+      <p>${t("amount_paid")}: <strong>${money(amount)}</strong><br>${t("thanks_call")}<br>
+      <span style="color:var(--muted); font-size:.85rem">${t("questions_call")} ${CFG.business.phones[0]}</span></p>
+      <button class="btn primary block" id="cf-inv">${t("download_invoice")}</button>
+      <button class="btn ghost block" data-go="shop" style="margin-top:8px">${t("continue_shopping")}</button>`;
+    $("cf-inv").onclick = () => downloadInvoice(pendingOrder.order_id, pendingOrder.phone);
+  } else {
+    const ord = pendingOrder ? pendingOrder.order_number : "";
+    box.innerHTML = `
+      <div class="big">❌</div>
+      <div><span class="badge bad">${t("order_failed")}</span></div>
+      ${ord ? `<div class="ordno">${t("order_id")} ${ord}</div>` : ""}
+      <p>${orderNumberOrMsg}<br><span style="color:var(--muted); font-size:.85rem">${t("cart_safe")}</span></p>
+      ${pendingOrder ? `<button class="btn primary block" id="retry-pay">${t("retry_payment")}</button>` : ""}
+      <button class="btn ghost block" data-go="cart" style="margin-top:8px">${t("back_to_cart")}</button>`;
+    const rp = $("retry-pay");
+    if (rp) rp.onclick = () => {
+      if (CFG.razorpay.mock) openMockPayment({ order_number: pendingOrder.order_number, amount: pendingOrder.amount });
+      else openLivePayment({ razorpay_order_id: pendingOrder.razorpay_order_id, razorpay_key_id: CFG.razorpay.key_id, amount: pendingOrder.amount, order_number: pendingOrder.order_number }, visitor.name, visitor.phone);
+    };
+  }
+  box.querySelectorAll("[data-go]").forEach((b) => b.onclick = () => show(b.dataset.go));
+  show("confirm");
+}
+async function downloadInvoice(orderId, phone) {
+  try {
+    const r = await fetch(`/api/invoice/${orderId}?phone=${encodeURIComponent(phone)}`);
+    const inv = await r.json();
+    if (!r.ok) throw new Error(inv.error || "Invoice failed.");
+    $("printwrap").innerHTML = renderInvoice(inv);
+    document.body.classList.add("printing");
+    window.print();
+    setTimeout(() => document.body.classList.remove("printing"), 500);
+  } catch (e) { alert(e.message); }
+}
+
+/* ---------- quote request ---------- */
+function openQuote(presetType) {
+  $("q-err").textContent = ""; $("q-ok").textContent = "";
+  if (visitor) { $("q-name").value = visitor.name; $("q-phone").value = visitor.phone; }
+  $("q-type").innerHTML = CATALOG.categories.map((c) =>
+    `<option value="${c}"${c === presetType ? " selected" : ""}>${catName(c)}</option>`).join("");
+  $("quotemodal").classList.add("open");
+}
+$("q-cancel").onclick = () => $("quotemodal").classList.remove("open");
+$("h-quote").addEventListener("click", () => openQuote());
+$("q-send").addEventListener("click", async () => {
+  const err = $("q-err"), ok = $("q-ok");
+  err.textContent = ""; ok.textContent = "";
+  const name = $("q-name").value.trim();
+  let phone = $("q-phone").value.trim().replace(/[\s-]/g, "");
+  const product_type = $("q-type").value, dimensions = $("q-dim").value.trim();
+  const quantity = $("q-qty").value.trim(), notes = $("q-notes").value.trim();
+  if (name.length < 2) { err.textContent = t("err_name"); return; }
+  if (!PHONE_RE.test(phone)) { err.textContent = t("err_phone"); return; }
+  if (dimensions.length < 2) { err.textContent = t("quote_dimensions"); return; }
+  if (!quantity) { err.textContent = t("quote_qty"); return; }
+  $("q-send").disabled = true;
+  try {
+    const r = await fetch("/api/quotes", {
+      method: "POST", headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ visitor_id: visitor.visitor_id, name, phone, product_type, dimensions, quantity, notes }),
+    });
+    const d = await r.json();
+    if (!r.ok) throw new Error(d.error || "Failed.");
+    ok.textContent = t("quote_done") + " " + t("quote_done_sub");
+    setTimeout(() => $("quotemodal").classList.remove("open"), 1600);
+  } catch (e) { err.textContent = e.message; }
+  $("q-send").disabled = false;
+});
+
+/* ---------- track / reorder ---------- */
+$("h-track").addEventListener("click", () => {
+  if (visitor) $("t-phone").value = visitor.phone;
+  $("track-results").innerHTML = "";
+  show("track");
+});
+$("t-go").addEventListener("click", async () => {
+  const err = $("t-err"), box = $("track-results");
+  err.textContent = ""; box.innerHTML = "";
+  let phone = $("t-phone").value.trim().replace(/[\s-]/g, "");
+  const orderId = $("t-oid").value.trim().toUpperCase();
+  if (!PHONE_RE.test(phone)) { err.textContent = t("err_phone"); return; }
+  $("t-go").disabled = true;
+  try {
+    const r = await fetch(`/api/orders/lookup?phone=${phone}${orderId ? "&order_id=" + encodeURIComponent(orderId) : ""}`);
+    const orders = await r.json();
+    if (!r.ok) throw new Error(orders.error || "Lookup failed.");
+    if (!orders.length) { box.innerHTML = `<div class="empty">${t("no_orders")}</div>`; return; }
+    box.innerHTML = orders.map((o) => `
+      <div class="ocard">
+        <div class="orow"><strong>${t("order_id")} ${o.order_number}</strong>
+          <span class="badge ${o.payment_status === "paid" ? "ok" : o.payment_status === "failed" ? "bad" : "info"}">${t("pay_" + o.payment_status)}</span></div>
+        <div class="orow"><span>${t("date")}</span><span>${o.created_at.slice(0, 10)}</span></div>
+        <div class="orow"><span>${t("status")}</span><span>${t("st_" + o.status)}</span></div>
+        <div class="orow"><span>${t("fulfillment_col")}</span><span>${o.fulfillment === "pickup" ? t("pickup") : t("delivery_opt")}</span></div>
+        <div class="oitems">${o.items.map((l) => `${l.qty} × ${l.name} (${l.variant_label})`).join("<br>")}</div>
+        <div class="orow"><strong>${t("grand_total")}</strong><strong>${money(o.total)}</strong></div>
+        <div style="display:flex; gap:8px; margin-top:8px; flex-wrap:wrap">
+          <button class="btn sm primary" data-buy="${o.id}">${t("buy_again")}</button>
+          ${o.payment_status === "paid" ? `<button class="btn sm ghost" data-inv="${o.id}" data-phone="${o.phone}">${t("download_invoice")}</button>` : ""}
+        </div>
+      </div>`).join("");
+    box.querySelectorAll("[data-buy]").forEach((b) => b.onclick = () => {
+      const o = orders.find((x) => x.id == b.dataset.buy);
+      const rebuilt = {};
+      o.items.forEach((l) => { if (l.sku && SKU.has(l.sku)) rebuilt[l.sku] = Math.min(10000, l.qty); });
+      if (!Object.keys(rebuilt).length) { alert(t("no_orders")); return; }
+      cart = rebuilt; saveCart(); updateBadges();
+      b.textContent = t("buy_again_done");
+      setTimeout(() => { renderCart(); show("cart"); }, 500);
+    });
+    box.querySelectorAll("[data-inv]").forEach((b) => b.onclick = () => downloadInvoice(b.dataset.inv, b.dataset.phone));
+  } catch (e) { err.textContent = e.message; }
+  $("t-go").disabled = false;
+});
+
+/* ---------- boot ---------- */
+(async function boot() {
+  try {
+    const [c, p, a] = await Promise.all([
+      fetch("/api/config-public").then((r) => r.json()),
+      fetch("/api/products").then((r) => r.json()),
+      fetch("/api/announcement").then((r) => r.json()),
+    ]);
+    CFG = c; CATALOG = p; ANNOUNCE = a;
+    for (const prod of CATALOG.products)
+      for (const v of prod.variants) SKU.set(v.sku, { product: prod, variant: v });
+    // Quote-converted order link: /order/<token>
+    const m = location.pathname.match(/^\/order\/([a-f0-9]{32})$/);
+    if (m) {
+      try {
+        const dr = await fetch("/api/draft-order/" + m[1]).then((r) => r.json());
+        if (dr.token) { draft = dr; $("g-name").value = dr.name || ""; $("g-phone").value = dr.phone || ""; }
+      } catch (e) { /* invalid link → normal flow */ }
+    }
+    applyI18n();
+    updateBadges();
+    document.title = CFG.business.name + " — Surat";
+    if (visitor && visitor.visitor_id) enterAfterGate();
+    else show("gate");
+  } catch (e) {
+    document.body.innerHTML = `<div style='padding:40px;text-align:center'>${t("server_down")}</div>`;
+  }
+})();
+</script>
+</body>
+</html>
