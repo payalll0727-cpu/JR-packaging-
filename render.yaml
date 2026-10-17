@@ -1,0 +1,16 @@
+# One-click deploy for Render (https://render.com) — free tier.
+# In Render: New → Blueprint → connect the repo containing this file.
+services:
+  - type: web
+    name: jr-paper-tube-website
+    runtime: node
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      # NOTE: on the free tier there is no persistent disk, so orders/visitors
+      # reset if the service restarts. Attach a paid disk later and point
+      # DB_FILE at it (see README "Deploy").
+      - key: DB_FILE
+        value: ./data/app.db

@@ -1,0 +1,133 @@
+{
+  "_comment": "REAL CATALOG — J.R. Paper Tube & Packaging, entered 2026-10-17 from Payal's product list. Variant: { sku (unique), label (shown to buyer), unit (pc/kg/roll…), price (INR per unit), stock }. Units marked (TBC) are Payal's to confirm — prices are final. Product: { id, name, category, description, image (path under public/, \"\" = none), hsn }. Edit freely, or use the admin panel (Products tab) — both write to this same file.",
+  "categories": [
+    "Paper Tubes",
+    "Clips",
+    "BOPP Bags",
+    "Parcel Bags",
+    "Strapping Rolls"
+  ],
+  "currency": "INR",
+  "products": [
+    {
+      "category": "Paper Tubes",
+      "description": "Spiral-wound paper tube (danda) — 47 inch length × 25mm diameter. Custom sizes available on quote.",
+      "hsn": "",
+      "id": "paper-tube-danda",
+      "image": "img/paper-tube-danda.jpg",
+      "name": "Paper Tube / Danda",
+      "variants": [
+        {
+          "label": "200g quality",
+          "price": 7.2,
+          "sku": "TUBE-200G",
+          "stock": 10000,
+          "unit": "pc"
+        },
+        {
+          "label": "250g quality",
+          "price": 9,
+          "sku": "TUBE-250G",
+          "stock": 10000,
+          "unit": "pc"
+        },
+        {
+          "label": "300g quality",
+          "price": 10.8,
+          "sku": "TUBE-300G",
+          "stock": 9997,
+          "unit": "pc"
+        }
+      ]
+    },
+    {
+      "category": "Clips",
+      "description": "Sturdy white clip for parcel packing.",
+      "hsn": "",
+      "id": "parcel-packing-clip",
+      "image": "img/parcel-packing-clip.jpg",
+      "name": "Parcel Packing Clip",
+      "variants": [
+        {
+          "label": "Standard",
+          "price": 68,
+          "sku": "CLIP-STD",
+          "stock": 10000,
+          "unit": "kg"
+        }
+      ]
+    },
+    {
+      "category": "BOPP Bags",
+      "description": "Crystal-clear self-seal BOPP bags — size 12 × 17 × 18 inch. Sold per packet of 1000 pcs. Easy peel & seal, super durable.",
+      "hsn": "",
+      "id": "bopp-bag",
+      "image": "img/bopp-bag.jpg",
+      "name": "BOPP Bag",
+      "variants": [
+        {
+          "label": "25 micron — packet of 1000 pcs",
+          "price": 1360,
+          "sku": "BOPP-25M",
+          "stock": 10000,
+          "unit": "packet"
+        },
+        {
+          "label": "36 micron — packet of 1000 pcs",
+          "price": 1850,
+          "sku": "BOPP-36M",
+          "stock": 10000,
+          "unit": "packet"
+        },
+        {
+          "label": "40 micron — packet of 1000 pcs",
+          "price": 1980,
+          "sku": "BOPP-40M",
+          "stock": 10000,
+          "unit": "packet"
+        },
+        {
+          "label": "51 micron — packet of 1000 pcs",
+          "price": 2350,
+          "sku": "BOPP-51M",
+          "stock": 10000,
+          "unit": "packet"
+        }
+      ]
+    },
+    {
+      "category": "Parcel Bags",
+      "description": "Blue poly liner bag for cartons and parcels.",
+      "hsn": "",
+      "id": "carton-parcel-bag",
+      "image": "img/carton-bag-parcel.jpg",
+      "name": "Carton Bag / Parcel Bag",
+      "variants": [
+        {
+          "label": "Blue",
+          "price": 78,
+          "sku": "BAG-BLUE",
+          "stock": 10000,
+          "unit": "kg"
+        }
+      ]
+    },
+    {
+      "category": "Strapping Rolls",
+      "description": "Pure virgin PP box strapping roll (patti roll).",
+      "hsn": "",
+      "id": "patty-roll-strapping",
+      "image": "img/patty-roll-strapping.jpg",
+      "name": "Patty Roll / Box Strapping Roll",
+      "variants": [
+        {
+          "label": "Pure Virgin",
+          "price": 280,
+          "sku": "ROLL-VIRGIN",
+          "stock": 10000,
+          "unit": "pc"
+        }
+      ]
+    }
+  ]
+}
