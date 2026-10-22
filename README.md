@@ -1,8 +1,7 @@
 # J.R. Paper Tube & Packaging — Order Website
 
 Wholesale packaging-materials shop for **J.R. Paper Tube & Packaging, Surat**
-(Prop. Jetharam Choudhary · 4/2128, Kagjini Chawl, N.T.M. Sahara Darwaja, Surat ·
-93775 13044, 99988 20009, 93776 67750).
+(Prop. Jetharam Choudhary · 98798 90987, 99988 20009, 93776 67750).
 
 Customers enter name + mobile number at the gate (no OTP, no accounts), browse the
 catalog, pay online via Razorpay, and track/reorder by phone number. The owner gets

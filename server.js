@@ -91,6 +91,20 @@ db.exec(`
     key   TEXT PRIMARY KEY,
     value TEXT NOT NULL
   );
+  CREATE TABLE IF NOT EXISTS users (
+    id            INTEGER PRIMARY KEY AUTOINCREMENT,
+    name          TEXT NOT NULL DEFAULT '',
+    email         TEXT UNIQUE NOT NULL,
+    phone         TEXT DEFAULT '',
+    password_hash TEXT NOT NULL,
+    salt          TEXT NOT NULL,
+    created_at    TEXT NOT NULL
+  );
+  CREATE TABLE IF NOT EXISTS sessions (
+    token      TEXT PRIMARY KEY,
+    user_id    INTEGER NOT NULL,
+    created_at TEXT NOT NULL
+  );
   CREATE INDEX IF NOT EXISTS idx_visitors_seen ON visitors(last_seen_at);
   CREATE INDEX IF NOT EXISTS idx_orders_created ON orders(created_at);
   CREATE INDEX IF NOT EXISTS idx_orders_phone ON orders(phone);
@@ -256,6 +270,77 @@ app.post("/api/gate", (req, res) => {
     "INSERT INTO visitors (name, phone, email, entered_at, last_seen_at, current_page) VALUES (?, ?, ?, ?, ?, ?)"
   ).run(name, phone, email, t, t, "gate");
   res.json({ visitor_id: r.lastInsertRowid, name, phone, email });
+});
+
+/* ------------------------------------------------------------------ */
+/* Optional customer accounts (email + password). Login is OPTIONAL:   */
+/* guests (name+phone gate) and full skips can shop and check out too. */
+/* Passwords are stored only as scrypt hashes, never in plain text.    */
+/* ------------------------------------------------------------------ */
+function hashPassword(password, salt) {
+  return crypto.scryptSync(String(password), salt, 64).toString("hex");
+}
+function createSession(userId) {
+  const token = crypto.randomBytes(32).toString("hex");
+  db.prepare("INSERT INTO sessions (token, user_id, created_at) VALUES (?, ?, ?)").run(token, userId, nowIso());
+  return token;
+}
+function userFromToken(req) {
+  const auth = String(req.headers.authorization || "");
+  const token = auth.startsWith("Bearer ") ? auth.slice(7) : "";
+  if (!token) return null;
+  const row = db.prepare(
+    "SELECT u.id, u.name, u.email, u.phone FROM sessions s JOIN users u ON u.id = s.user_id WHERE s.token = ?"
+  ).get(token);
+  return row || null;
+}
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+app.post("/api/auth/register", (req, res) => {
+  const name = String(req.body.name || "").trim();
+  const email = String(req.body.email || "").trim().toLowerCase();
+  const phone = String(req.body.phone || "").trim().replace(/[\s-]/g, "");
+  const password = String(req.body.password || "");
+  if (!EMAIL_RE.test(email)) return res.status(400).json({ error: "Please enter a valid email address." });
+  if (password.length < 6) return res.status(400).json({ error: "Password must be at least 6 characters." });
+  if (name && name.length < 2) return res.status(400).json({ error: "Please enter your name." });
+  if (phone && !PHONE_RE.test(phone)) return res.status(400).json({ error: "Enter a valid 10-digit mobile number." });
+  if (isBlocked(phone)) return res.status(403).json({ error: "Please contact the shop directly." });
+  if (db.prepare("SELECT 1 FROM users WHERE email = ?").get(email)) {
+    return res.status(409).json({ error: "This email is already registered. Please login." });
+  }
+  const salt = crypto.randomBytes(16).toString("hex");
+  const r = db.prepare("INSERT INTO users (name, email, phone, password_hash, salt, created_at) VALUES (?, ?, ?, ?, ?, ?)")
+    .run(name, email, phone, hashPassword(password, salt), salt, nowIso());
+  const user = { id: r.lastInsertRowid, name, email, phone };
+  res.json({ ok: true, token: createSession(user.id), user });
+});
+
+app.post("/api/auth/login", (req, res) => {
+  const email = String(req.body.email || "").trim().toLowerCase();
+  const password = String(req.body.password || "");
+  const row = db.prepare("SELECT * FROM users WHERE email = ?").get(email);
+  if (!row) return res.status(401).json({ error: "No account found for this email. Please create an account first." });
+  const candidate = Buffer.from(hashPassword(password, row.salt), "hex");
+  const stored = Buffer.from(row.password_hash, "hex");
+  if (candidate.length !== stored.length || !crypto.timingSafeEqual(candidate, stored)) {
+    return res.status(401).json({ error: "Wrong password. Please try again." });
+  }
+  const user = { id: row.id, name: row.name, email: row.email, phone: row.phone };
+  res.json({ ok: true, token: createSession(user.id), user });
+});
+
+app.get("/api/auth/me", (req, res) => {
+  const user = userFromToken(req);
+  if (!user) return res.status(401).json({ error: "Not logged in." });
+  res.json({ ok: true, user });
+});
+
+app.post("/api/auth/logout", (req, res) => {
+  const auth = String(req.headers.authorization || "");
+  const token = auth.startsWith("Bearer ") ? auth.slice(7) : "";
+  if (token) db.prepare("DELETE FROM sessions WHERE token = ?").run(token);
+  res.json({ ok: true });
 });
 
 app.post("/api/heartbeat", (req, res) => {

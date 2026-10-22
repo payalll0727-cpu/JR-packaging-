@@ -9,10 +9,10 @@ module.exports = {
   business: {
     name: "JR Paper Tube & Packaging",
     owner: "Jetharam Choudhary",
-    address: "4/2128, Kagjini Chawl, N.T.M. Sahara Darwaja, Surat",
-    phones: ["93775 13044", "99988 20009", "93776 67750"],
+    address: "", // No shop address shown anywhere on the site (Payal, 2026-10-21).
+    phones: ["98798 90987", "99988 20009", "93776 67750"],
     // WhatsApp help button number, digits only with country code. Clearly marked config value.
-    whatsapp: "919377513044",
+    whatsapp: "919879890987",
     // Legal/GST-registered name shown on invoices (must match the GSTIN).
     invoice_name: "LaxmiPati Packaging",
     // Business GSTIN (provided 2026-10-17) — shown on invoices.
@@ -37,7 +37,7 @@ module.exports = {
   admin: {
     // PLACEHOLDER — change this before going live. The admin panel
     // ( /admin.html ) asks for this password; it is checked server-side.
-    password: "pratik2010",
+    password: "changeme123",
   },
 
   server: {
