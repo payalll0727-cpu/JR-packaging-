@@ -48,7 +48,7 @@ en: {
   quote_done: "Quote request sent!", quote_done_sub: "We'll call you back shortly with the price.",
   track_order: "Track Order", track_title: "Track / Reorder",
   track_phone: "Mobile number", track_order_id: "Order ID (optional)",
-  track_order_id_ph: "e.g. JRPT-20250101-1234", track_btn: "Find My Orders",
+  track_order_id_ph: "e.g. CPT-20250101-1234", track_btn: "Find My Orders",
   no_orders: "No orders found for this number.", buy_again: "Buy Again", buy_again_done: "Added to cart ✓",
   order_id: "Order", date: "Date", status: "Status", payment: "Payment", fulfillment_col: "Fulfillment",
   items: "Items",
@@ -115,7 +115,7 @@ hi: {
   quote_done: "कोटेशन अनुरोध भेज दिया!", quote_done_sub: "कीमत के साथ हम जल्द आपको कॉल करेंगे।",
   track_order: "ऑर्डर ट्रैक करें", track_title: "ट्रैक / फिर से ऑर्डर",
   track_phone: "मोबाइल नंबर", track_order_id: "ऑर्डर ID (वैकल्पिक)",
-  track_order_id_ph: "जैसे JRPT-20250101-1234", track_btn: "मेरे ऑर्डर खोजें",
+  track_order_id_ph: "जैसे CPT-20250101-1234", track_btn: "मेरे ऑर्डर खोजें",
   no_orders: "इस नंबर पर कोई ऑर्डर नहीं मिला।", buy_again: "फिर से खरीदें", buy_again_done: "कार्ट में जुड़ गया ✓",
   order_id: "ऑर्डर", date: "तारीख", status: "स्थिति", payment: "भुगतान", fulfillment_col: "प्राप्ति",
   items: "आइटम",
@@ -152,8 +152,8 @@ window.waHelpText = () => window.getLang() === "hi"
   ? "नमस्ते, मुझे ऑर्डर में मदद चाहिए"
   : "Namaste, mujhe order me help chahiye";
 window.waStatusText = (name, orderId, status) => window.getLang() === "hi"
-  ? `नमस्ते ${name}, आपका ऑर्डर ${orderId} अब '${window.t("st_" + status)}' है। - JR Paper Tube & Packaging`
-  : `Hello ${name}, your order ${orderId} is now: ${window.t("st_" + status)}. - JR Paper Tube & Packaging`;
+  ? `नमस्ते ${name}, आपका ऑर्डर ${orderId} अब '${window.t("st_" + status)}' है। - Choudhary Paper Tube & Packaging`
+  : `Hello ${name}, your order ${orderId} is now: ${window.t("st_" + status)}. - Choudhary Paper Tube & Packaging`;
 
 /* Admin-panel strings (merged into window.STR). */
 Object.assign(window.STR.en, {

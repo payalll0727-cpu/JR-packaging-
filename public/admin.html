@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Admin — JR Paper Tube &amp; Packaging</title>
+<title>Admin — Choudhary Paper Tube &amp; Packaging</title>
 <script src="/i18n.js"></script>
 <script src="/invoice.js"></script>
 <style>
@@ -100,7 +100,7 @@
 <!-- login -->
 <div id="login">
   <div class="logincard">
-    <h2 style="margin-top:0">JR <span data-i18n="adm_title"></span></h2>
+    <h2 style="margin-top:0">Choudhary <span data-i18n="adm_title"></span></h2>
     <label for="pw" data-i18n="adm_pw"></label>
     <input id="pw" type="password" autocomplete="off" enterkeyhint="go">
     <div class="err" id="pw-err"></div>
@@ -111,7 +111,7 @@
 <!-- panel -->
 <div id="panel">
   <header><div class="wrap hrow" style="padding-left:0;padding-right:0">
-    <div class="brand">JR <span data-i18n="adm_title"></span></div>
+    <div class="brand">Choudhary <span data-i18n="adm_title"></span></div>
     <div class="hbtns">
       <div class="langtoggle"><button data-lang="en">EN</button><button data-lang="hi">हिं</button></div>
       <button class="hbtn" id="logout" data-i18n="cm_logout"></button>
@@ -384,8 +384,8 @@ $("conv-make").onclick = async () => {
     $("conv-link").textContent = d.link;
     $("conv-linkbox").style.display = "block";
     const msg = getLang() === "hi"
-      ? `नमस्ते ${convQuote.name}, आपके कोटेशन का ऑर्डर लिंक: ${d.link} - JR Paper Tube & Packaging`
-      : `Hello ${convQuote.name}, your order link for the quotation: ${d.link} - JR Paper Tube & Packaging`;
+      ? `नमस्ते ${convQuote.name}, आपके कोटेशन का ऑर्डर लिंक: ${d.link} - Choudhary Paper Tube & Packaging`
+      : `Hello ${convQuote.name}, your order link for the quotation: ${d.link} - Choudhary Paper Tube & Packaging`;
     $("conv-wa").href = `https://wa.me/91${convQuote.phone}?text=${encodeURIComponent(msg)}`;
     loadQuotes();
   } catch (e) { err.textContent = e.message; }

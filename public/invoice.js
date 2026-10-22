@@ -50,7 +50,7 @@ function renderInvoice(inv) {
   return `
   <div class="inv">
     <div class="inv-head">
-      <div class="inv-brand">JR</div>
+      <div class="inv-brand">C</div>
       <h2>${esc(b.invoice_name || b.name)}</h2>
       <div>${esc(b.address)}</div>
       <div>Ph: ${b.phones.map(esc).join(" · ")}</div>
