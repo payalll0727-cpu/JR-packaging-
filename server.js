@@ -1,5 +1,5 @@
 /**
- * JR Paper Tube & Packaging — backend
+ * Choudhary Paper Tube & Packaging — backend
  * Node.js + Express + SQLite (node:sqlite, built into Node 22.5+).
  * All data lives in one SQLite file (see config.server.dbFile).
  *
@@ -355,7 +355,7 @@ app.post("/api/heartbeat", (req, res) => {
 function makeOrderNumber() {
   const d = new Date();
   const ymd = `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, "0")}${String(d.getDate()).padStart(2, "0")}`;
-  return `JRPT-${ymd}-${Math.floor(1000 + Math.random() * 9000)}`;
+  return `CPT-${ymd}-${Math.floor(1000 + Math.random() * 9000)}`;
 }
 function makeQuoteNumber() {
   const d = new Date();
@@ -867,6 +867,6 @@ app.use(express.static(path.join(__dirname, "public")));
 
 const port = config.server.port;
 app.listen(port, () => {
-  console.log(`JR Paper Tube & Packaging — listening on http://localhost:${port}`);
+  console.log(`Choudhary Paper Tube & Packaging — listening on http://localhost:${port}`);
   console.log(`Payments: ${rzpMock() ? "MOCK mode (test)" : "LIVE Razorpay mode"}`);
 });

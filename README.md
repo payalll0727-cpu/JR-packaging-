@@ -1,6 +1,6 @@
-# J.R. Paper Tube & Packaging — Order Website
+# Choudhary Paper Tube & Packaging — Order Website
 
-Wholesale packaging-materials shop for **J.R. Paper Tube & Packaging, Surat**
+Wholesale packaging-materials shop for **Choudhary Paper Tube & Packaging, Surat**
 (Prop. Jetharam Choudhary · 98798 90987, 99988 20009, 93776 67750).
 
 Customers enter name + mobile number at the gate (no OTP, no accounts), browse the
