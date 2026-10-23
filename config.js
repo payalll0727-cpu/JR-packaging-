@@ -45,6 +45,21 @@ module.exports = {
     dbFile: process.env.DB_FILE || "./data/app.db",
   },
 
+  // Login OTP (name + mobile login is compulsory; Sachin/Payal, 2026-10-23).
+  // mode "demo": the OTP is shown on the login screen itself (testing only,
+  // no SMS goes out). mode "live": OTP is sent by SMS via MSG91 — fill the
+  // msg91 keys below (account signup + DLT approval are the owner's job),
+  // then flip mode to "live" and redeploy.
+  otp: {
+    enabled: true,
+    mode: "demo", // "demo" | "live"
+    msg91: {
+      authKey: "",    // MSG91 auth key
+      templateId: "", // MSG91 OTP template id (DLT-approved)
+      senderId: "",   // MSG91 sender id (optional with template flow)
+    },
+  },
+
   delivery: {
     // SAMPLE — delivery charge (INR) applied when the order subtotal is below
     // free_above AND the customer chooses Delivery. Shop Pickup is always free.

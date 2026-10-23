@@ -250,13 +250,71 @@ function isBlocked(phone) {
   return !!db.prepare("SELECT 1 FROM blocks WHERE phone = ?").get(phone);
 }
 
-// Entry gate: name + 10-digit mobile. One row per entry (visitor register).
+/* ------------------------------------------------------------------ */
+/* Login OTP (compulsory since 2026-10-23). In-memory store: fine for  */
+/* a single-instance shop server. config.otp.mode "demo" shows the    */
+/* code on the login screen (no SMS); "live" sends via MSG91.          */
+/* ------------------------------------------------------------------ */
+const otpStore = new Map(); // phone -> { code, expiresAt, tries, lastSentAt, sends[], pass, passExpiresAt }
+const OTP_TTL_MS = 5 * 60 * 1000, OTP_RESEND_MS = 30 * 1000, OTP_MAX_SENDS = 4, OTP_WINDOW_MS = 15 * 60 * 1000;
+
+async function sendOtpSms(phone, code) {
+  const m = (config.otp && config.otp.msg91) || {};
+  if (!m.authKey || !m.templateId) throw new Error("MSG91 is not configured.");
+  const url = "https://control.msg91.com/api/v5/otp?template_id=" + encodeURIComponent(m.templateId)
+    + "&mobile=91" + phone + "&otp=" + code + (m.senderId ? "&sender=" + encodeURIComponent(m.senderId) : "");
+  const r = await fetch(url, { method: "POST", headers: { authkey: m.authKey, "Content-Type": "application/json" }, body: JSON.stringify({}) });
+  if (!r.ok) throw new Error("SMS gateway error " + r.status);
+}
+
+app.post("/api/otp/send", async (req, res) => {
+  if (!config.otp || config.otp.enabled === false) return res.status(400).json({ error: "otp_off", message: "OTP login is off." });
+  const phone = String(req.body.phone || "").trim().replace(/[\s-]/g, "");
+  if (!PHONE_RE.test(phone)) return res.status(400).json({ error: "phone", message: "Enter a valid 10-digit mobile number." });
+  if (isBlocked(phone)) return res.status(403).json({ error: "blocked", message: "Please contact the shop directly." });
+  const now = Date.now();
+  let rec = otpStore.get(phone);
+  if (!rec) { rec = { sends: [] }; otpStore.set(phone, rec); }
+  rec.sends = (rec.sends || []).filter((t) => now - t < OTP_WINDOW_MS);
+  if (rec.lastSentAt && now - rec.lastSentAt < OTP_RESEND_MS) return res.status(429).json({ error: "wait", message: "Thoda ruko — OTP abhi bheja tha. 30 second baad dobara try karo." });
+  if (rec.sends.length >= OTP_MAX_SENDS) return res.status(429).json({ error: "limit", message: "Bahut baar OTP maang liya. Kuch der baad try karo." });
+  const code = String(crypto.randomInt(100000, 1000000));
+  const live = config.otp.mode === "live";
+  if (live) { try { await sendOtpSms(phone, code); } catch (e) { return res.status(502).json({ error: "sms", message: "OTP SMS nahi ja paya. Dobara try karo." }); } }
+  rec.code = code; rec.expiresAt = now + OTP_TTL_MS; rec.tries = 0; rec.lastSentAt = now; rec.sends.push(now); rec.pass = ""; rec.passExpiresAt = 0;
+  res.json(live ? { ok: true, demo: false } : { ok: true, demo: true, otp: code });
+});
+
+app.post("/api/otp/verify", (req, res) => {
+  const phone = String(req.body.phone || "").trim().replace(/[\s-]/g, "");
+  const otp = String(req.body.otp || "").trim();
+  const rec = otpStore.get(phone);
+  if (!rec || !rec.code) return res.status(400).json({ error: "no_otp", message: "Pehle OTP bhejo." });
+  if (Date.now() > rec.expiresAt) { rec.code = ""; return res.status(400).json({ error: "expired", message: "OTP expire ho gaya. Naya OTP bhejo." }); }
+  rec.tries = (rec.tries || 0) + 1;
+  if (rec.tries > 5) { rec.code = ""; return res.status(400).json({ error: "tries", message: "Bahut galat koshish. Naya OTP bhejo." }); }
+  if (otp !== rec.code) return res.status(400).json({ error: "wrong", message: "OTP galat hai. Dobara check karo." });
+  rec.code = "";
+  rec.pass = crypto.randomBytes(16).toString("hex");
+  rec.passExpiresAt = Date.now() + 10 * 60 * 1000;
+  res.json({ ok: true, pass: rec.pass });
+});
+
+// Entry gate: name + 10-digit mobile + verified OTP pass. One row per entry (visitor register).
 app.post("/api/gate", (req, res) => {
   const name = String(req.body.name || "").trim();
   const phone = String(req.body.phone || "").trim().replace(/[\s-]/g, "");
   const email = String(req.body.email || "").trim().slice(0, 120);
   if (name.length < 2 || name.length > 80) return res.status(400).json({ error: "name", message: "Please enter your name." });
   if (!PHONE_RE.test(phone)) return res.status(400).json({ error: "phone", message: "Enter a valid 10-digit mobile number." });
+  if (config.otp && config.otp.enabled !== false) {
+    const rec = otpStore.get(phone);
+    const pass = String(req.body.pass || "");
+    if (!rec || !rec.pass || pass !== rec.pass || Date.now() > rec.passExpiresAt) {
+      return res.status(403).json({ error: "otp", message: "Please verify the OTP sent to your mobile first." });
+    }
+    rec.pass = ""; rec.passExpiresAt = 0; // one-time use
+  }
   if (email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return res.status(400).json({ error: "email", message: "Please enter a valid email address." });
   if (isBlocked(phone)) {
     return res.status(403).json({
