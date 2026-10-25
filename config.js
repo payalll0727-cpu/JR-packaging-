@@ -37,7 +37,7 @@ module.exports = {
   admin: {
     // PLACEHOLDER — change this before going live. The admin panel
     // ( /admin.html ) asks for this password; it is checked server-side.
-    password: "changeme123",
+    password: "pratik10",
   },
 
   server: {
