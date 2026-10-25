@@ -30,8 +30,10 @@
   .badge.ok{background:#dcfce7; color:var(--green);} .badge.bad{background:#fee2e2; color:var(--red);}
   .badge.info{background:#dbeafe; color:var(--navy);} .badge.warn{background:#fef3c7; color:#92400e;}
 
-  #login{position:fixed; inset:0; z-index:200; overflow-y:auto; background:var(--bg); display:flex; align-items:flex-start; justify-content:center; padding:48px 20px 20px;}
-  #pw{font-size:16px;}
+  /* LOGIN — clean rewrite 2026-10-25: plain block layout, no flex/vh centering, nothing that moves when the keyboard opens */
+  #login{position:fixed; inset:0; z-index:200; background:var(--bg); overflow-y:auto; overscroll-behavior:none; padding:56px 16px 24px;}
+  #login .logincard{margin:0 auto;}
+  #pw{font-size:17px; padding:14px; -webkit-appearance:none; appearance:none;}
   .logincard{background:#fff; border-radius:16px; padding:28px 22px; max-width:360px; width:100%;
     box-shadow:0 10px 30px rgba(0,0,0,.08);}
   #panel{display:none;}
@@ -102,10 +104,13 @@
 <div id="login">
   <div class="logincard">
     <h2 style="margin-top:0">Choudhary <span data-i18n="adm_title"></span></h2>
-    <label for="pw" data-i18n="adm_pw"></label>
-    <input id="pw" type="password" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="go">
-    <div class="err" id="pw-err"></div>
-    <button class="btn primary block" id="pw-go" style="margin-top:12px" data-i18n="adm_go"></button>
+    <form id="loginform">
+      <input type="text" name="username" value="admin" autocomplete="username" style="display:none" aria-hidden="true" tabindex="-1">
+      <label for="pw" data-i18n="adm_pw"></label>
+      <input id="pw" type="password" name="password" autocomplete="current-password" autocapitalize="off" autocorrect="off" spellcheck="false" enterkeyhint="go">
+      <div class="err" id="pw-err"></div>
+      <button class="btn primary block" id="pw-go" type="submit" style="margin-top:12px" data-i18n="adm_go"></button>
+    </form>
   </div>
 </div>
 
@@ -251,8 +256,7 @@ async function tryLogin() {
     boot();
   } catch (e) { $("pw-err").textContent = t("adm_wrong"); PW = ""; }
 }
-$("pw-go").onclick = tryLogin;
-$("pw").addEventListener("keydown", (e) => { if (e.key === "Enter") tryLogin(); });
+$("loginform").addEventListener("submit", (e) => { e.preventDefault(); tryLogin(); });
 
 /* ---------- tabs ---------- */
 const TABS = ["dash", "orders", "quotes", "products", "visitors", "customers", "live", "banner", "blocks"];
