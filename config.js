@@ -22,22 +22,24 @@ module.exports = {
   },
 
   razorpay: {
-    // PLACEHOLDER — replace with the business's LIVE Razorpay credentials
-    // from the Razorpay Dashboard (Settings → API Keys) before going live.
-    key_id: "rzp_test_PLACEHOLDER",
-    key_secret: "PLACEHOLDER_SECRET",
+    // LIVE keys come from Render Environment variables — NEVER write the
+    // real Key Secret in this file: the GitHub repo is public.
+    // Render → service → Environment: RAZORPAY_KEY_ID, RAZORPAY_KEY_SECRET,
+    // RAZORPAY_MOCK=false. The placeholders below are only a local fallback.
+    key_id: process.env.RAZORPAY_KEY_ID || "rzp_test_PLACEHOLDER",
+    key_secret: process.env.RAZORPAY_KEY_SECRET || "PLACEHOLDER_SECRET",
 
     // When true, the backend creates MOCK Razorpay orders (order_mock_...)
     // and the checkout page shows a simulated test-payment dialog instead of
-    // the real Razorpay Checkout.js. Set to false AND fill in real keys above
-    // to accept real payments. Going live = key swap + mock: false. Nothing else changes.
-    mock: true,
+    // the real Razorpay Checkout.js. RAZORPAY_MOCK=false + real keys in the
+    // environment = real payments. Nothing else changes.
+    mock: process.env.RAZORPAY_MOCK ? process.env.RAZORPAY_MOCK === "true" : true,
   },
 
   admin: {
     // PLACEHOLDER — change this before going live. The admin panel
     // ( /admin.html ) asks for this password; it is checked server-side.
-    password: "pratik10",
+    password: "changeme123",
   },
 
   server: {
