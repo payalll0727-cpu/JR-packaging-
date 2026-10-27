@@ -39,7 +39,11 @@ module.exports = {
   admin: {
     // PLACEHOLDER — change this before going live. The admin panel
     // ( /admin.html ) asks for this password; it is checked server-side.
-    password: "changeme123",
+    // Admin password comes from the ADMIN_PASSWORD env var (Render
+    // Environment) — NEVER write the real password in this file: the
+    // repo is public. The fallback below is only a safety net for local
+    // runs; on the live site the env var must be set.
+    password: process.env.ADMIN_PASSWORD || "changeme123",
   },
 
   server: {
