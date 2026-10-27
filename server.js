@@ -23,9 +23,40 @@ app.use(express.json({ limit: "256kb" }));
 /* ------------------------------------------------------------------ */
 /* Database                                                            */
 /* ------------------------------------------------------------------ */
-const dbFile = path.resolve(__dirname, config.server.dbFile);
-fs.mkdirSync(path.dirname(dbFile), { recursive: true });
-const db = new DatabaseSync(dbFile);
+/* Two backends, same synchronous API:
+ * - Turso cloud (libsql package) when TURSO_DATABASE_URL +
+ *   TURSO_AUTH_TOKEN are set — data survives Render free-tier restarts.
+ * - Local file via node:sqlite otherwise (unchanged original behaviour).
+ * The libsql sync API mirrors node:sqlite (prepare/get/all/run/exec,
+ * { changes, lastInsertRowid } from run()) with ONE difference: rows
+ * carry an extra `_metadata` field. The thin wrapper below strips it so
+ * every response stays identical to the local-file path. */
+let db;
+if (config.turso && config.turso.url && config.turso.authToken) {
+  const LibsqlDatabase = require("libsql");
+  const rawDb = new LibsqlDatabase(config.turso.url, { authToken: config.turso.authToken });
+  const stripMeta = (row) => {
+    if (row && typeof row === "object") delete row._metadata;
+    return row;
+  };
+  db = {
+    exec: (sql) => rawDb.exec(sql),
+    prepare: (sql) => {
+      const stmt = rawDb.prepare(sql);
+      return {
+        get: (...args) => stripMeta(stmt.get(...args)),
+        all: (...args) => stmt.all(...args).map(stripMeta),
+        run: (...args) => stmt.run(...args),
+      };
+    },
+  };
+  console.log("Database: Turso cloud (persistent across restarts).");
+} else {
+  const dbFile = path.resolve(__dirname, config.server.dbFile);
+  fs.mkdirSync(path.dirname(dbFile), { recursive: true });
+  db = new DatabaseSync(dbFile);
+  console.log(`Database: local file ${dbFile}`);
+}
 
 db.exec(`
   CREATE TABLE IF NOT EXISTS visitors (
@@ -113,6 +144,10 @@ db.exec(`
 try { db.exec("ALTER TABLE orders ADD COLUMN fulfillment TEXT NOT NULL DEFAULT 'delivery'"); } catch (e) { /* already there */ }
 // Migration: optional email on the entry gate.
 try { db.exec("ALTER TABLE visitors ADD COLUMN email TEXT DEFAULT ''"); } catch (e) { /* already there */ }
+// Migration: GST amount stored per order (2026-10-27). Orders placed before
+// this fix have gst_amount = 0; buildInvoice falls back to the legacy
+// computation for those so their invoices stay as originally issued.
+try { db.exec("ALTER TABLE orders ADD COLUMN gst_amount REAL NOT NULL DEFAULT 0"); } catch (e) { /* already there */ }
 
 const nowIso = () => new Date().toISOString();
 const PHONE_RE = /^[6-9]\d{9}$/; // 10-digit Indian mobile
@@ -136,6 +171,12 @@ function saveCatalog(catalog) {
 }
 function slugify(s) {
   return String(s).toLowerCase().trim().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 60) || "item";
+}
+
+/** GST on a subtotal: catalog prices are GST-exclusive, GST is added on top. */
+function gstOn(subtotal) {
+  const rate = Number(config.business.gst_rate) || 0;
+  return Math.round(subtotal * rate / 100 * 100) / 100;
 }
 
 /** Recompute an order's lines + totals from SKUs only. Throws on bad input. */
@@ -162,8 +203,11 @@ function priceOrder(items, fulfillment) {
   // Delivery rule: pickup is always free; delivery costs config charge below free_above.
   const delivery = fulfillment === "pickup" ? 0
     : (subtotal >= config.delivery.free_above ? 0 : config.delivery.charge);
-  const total = Math.round((subtotal + delivery) * 100) / 100;
-  return { lines, subtotal, delivery, total };
+  // GST is charged on the subtotal and included in the payable total, so the
+  // amount collected via Razorpay always matches the invoice grand total.
+  const gst = gstOn(subtotal);
+  const total = Math.round((subtotal + gst + delivery) * 100) / 100;
+  return { lines, subtotal, gst, delivery, total };
 }
 
 /** Decrement stock for purchased SKUs (best-effort, after successful payment). */
@@ -432,7 +476,7 @@ app.post("/api/orders", async (req, res) => {
     if (!PHONE_RE.test(cleanPhone)) throw new Error("Enter a valid 10-digit mobile number.");
     if (isBlocked(cleanPhone)) throw new Error("Please contact the shop directly.");
 
-    let lines, subtotal, delivery, total, draftRow = null;
+    let lines, subtotal, gst, delivery, total, draftRow = null;
 
     if (draft_token) {
       // Quote-converted draft order: line comes from the admin-approved quote.
@@ -444,9 +488,10 @@ app.post("/api/orders", async (req, res) => {
       lines = [{ sku: null, name: draftRow.item_label, variant_label: "Custom quote", unit: "lot", price: draftRow.price, qty, line_total: lineTotal }];
       subtotal = lineTotal;
       delivery = ff === "pickup" ? 0 : (subtotal >= config.delivery.free_above ? 0 : config.delivery.charge);
-      total = Math.round((subtotal + delivery) * 100) / 100;
+      gst = gstOn(subtotal);
+      total = Math.round((subtotal + gst + delivery) * 100) / 100;
     } else {
-      ({ lines, subtotal, delivery, total } = priceOrder(items, ff));
+      ({ lines, subtotal, gst, delivery, total } = priceOrder(items, ff));
     }
 
     // Address only needed for delivery; pickup shows the shop address instead.
@@ -466,12 +511,12 @@ app.post("/api/orders", async (req, res) => {
     try {
       const r = db.prepare(`INSERT INTO orders
         (order_number, visitor_id, name, phone, address, city, pincode, fulfillment, items_json,
-         subtotal, delivery, total, status, payment_status, razorpay_order_id, created_at, updated_at)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'New', 'pending', ?, ?, ?)`)
+         subtotal, gst_amount, delivery, total, status, payment_status, razorpay_order_id, created_at, updated_at)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'New', 'pending', ?, ?, ?)`)
         .run(orderNumber, Number(visitor_id) || null, cleanName, cleanPhone,
              ff === "pickup" ? "Shop pickup" : cleanAddr,
              ff === "pickup" ? "" : cleanCity, ff === "pickup" ? "" : cleanPin,
-             ff, JSON.stringify(lines), subtotal, delivery, total, rzpOrder.id, t, t);
+             ff, JSON.stringify(lines), subtotal, gst, delivery, total, rzpOrder.id, t, t);
       orderId = r.lastInsertRowid;
     } catch (e) {
       if (String(e.message).includes("UNIQUE")) return res.status(409).json({ error: "Order number collision, please retry." });
@@ -481,6 +526,7 @@ app.post("/api/orders", async (req, res) => {
 
     res.json({
       order_id: orderId, order_number: orderNumber, amount: total, currency: "INR",
+      subtotal, gst, delivery,
       razorpay_order_id: rzpOrder.id, razorpay_key_id: config.razorpay.key_id,
       mock: rzpMock(), business: config.business.name,
     });
@@ -579,8 +625,18 @@ function buildInvoice(order) {
     return { ...l, hsn };
   });
   const taxable = Math.round(order.subtotal * 100) / 100;
-  const cgst = Math.round(taxable * (rate / 2) / 100 * 100) / 100;
-  const sgst = cgst;
+  let cgst, sgst;
+  if (order.gst_amount) {
+    // GST stored at order time: split it so CGST + SGST always equals the
+    // stored GST exactly, and grand_total equals the amount actually paid.
+    cgst = Math.round(order.gst_amount / 2 * 100) / 100;
+    sgst = Math.round((order.gst_amount - cgst) * 100) / 100;
+  } else {
+    // Orders placed before the GST fix have no stored GST — keep the legacy
+    // computation so their invoices stay as originally issued.
+    cgst = Math.round(taxable * (rate / 2) / 100 * 100) / 100;
+    sgst = cgst;
+  }
   const grand = Math.round((taxable + cgst + sgst + order.delivery) * 100) / 100;
   return {
     business: config.business,
@@ -589,7 +645,7 @@ function buildInvoice(order) {
     date: order.created_at,
     fulfillment: order.fulfillment || "delivery",
     customer: { name: order.name, phone: order.phone, address: order.address, city: order.city, pincode: order.pincode },
-    lines, taxable, cgst, sgst, delivery: order.delivery, grand_total: grand,
+    lines, taxable, gst_amount: Math.round((cgst + sgst) * 100) / 100, cgst, sgst, delivery: order.delivery, grand_total: grand,
     payment_status: order.payment_status,
     note: "Prices exclusive of GST. GST charged extra as applicable. Goods once sold will not be taken back.",
   };
