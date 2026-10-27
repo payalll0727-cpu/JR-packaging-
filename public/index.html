@@ -487,7 +487,7 @@ footer.site{background:#E2EBF6;}
 body{background:#EFE6CC}
 .app{background:#F7F1E1;box-shadow:0 0 24px rgba(51,64,31,.14)}
 .view{padding-bottom:30px}
-#bottombar{display:none !important}
+.view{padding-bottom:104px}
 a{color:#596B30}
 .btn{background:#33401F;color:#F7F1E1;letter-spacing:.6px;border-radius:14px}
 .btn.ghost{background:transparent;color:#33401F;border:1.5px solid #33401F}
@@ -624,6 +624,33 @@ footer.site .fin{color:#CFCBA9}
 footer.site strong{color:#F3EDD8}
 footer.site .gstline{color:#C9A86A;font-size:.72rem;letter-spacing:2px}
 .toast{background:#33401F;color:#F7F1E1}
+/* ===== FIXED BOTTOM MENU + QTY CONTROLS 2026-10-27 (Payal: menu static + qty box/+50/+100) ===== */
+/* The old in-flow pill menu row is retired — the same HOME/SAVED/BAG/ACCOUNT
+   navigation now lives in the always-on fixed bottom bar (#bottombar). */
+.topmenu{display:none !important}
+/* Fixed bottom bar: full-width heritage strip, cream + olive, active = olive pill.
+   Overrides the earlier floating-pill treatment; visibility stays via .show (JS). */
+.bottombar{position:fixed;left:50%;transform:translateX(-50%);bottom:0;width:100%;max-width:1024px;height:auto;
+  background:#FBF6EA;border-top:1.5px solid #DCD0AB;border-radius:0;padding:7px 14px calc(7px + env(safe-area-inset-bottom));
+  align-items:center;justify-content:space-between;box-shadow:0 -8px 22px rgba(51,64,31,.13);backdrop-filter:none;z-index:80}
+.bottombar button{flex:0 0 auto;flex-direction:row;align-items:center;gap:7px;background:transparent;border:none;cursor:pointer;
+  font-size:.74rem;letter-spacing:2.2px;font-weight:800;color:#596B30;padding:10px 13px;border-radius:999px;position:relative;text-transform:uppercase}
+.bottombar button svg{display:none}
+.bottombar button .bblbl{display:inline;font-size:.74rem;font-weight:800}
+.bottombar button.on{background:#33401F;color:#F7F1E1}
+.bottombar .bagbadge{position:static;background:#C9A86A;color:#33401F;font-size:.66rem;font-weight:800;min-width:19px;height:19px;
+  border-radius:50%;display:inline-flex;align-items:center;justify-content:center;padding:0 4px;margin-left:1px}
+/* WhatsApp float rests just above the fixed bar */
+.wa-float{bottom:86px}
+/* Quantity controls: editable box + quick-add chips */
+.qtyrow{flex-wrap:wrap}
+.stepper input{width:56px;height:40px;border:none;background:transparent;text-align:center;font-weight:800;font-size:1rem;color:#2E3A1E;padding:0;-moz-appearance:textfield;appearance:textfield}
+.stepper input:focus{outline:none}
+.stepper input::-webkit-outer-spin-button,.stepper input::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+.cline .stepper input{width:46px;height:32px;font-size:.95rem}
+.qtychips{display:inline-flex;gap:8px}
+.qtychip{border:1.5px solid #DCD0AB;background:#FFFDF6;color:#33401F;border-radius:999px;padding:9px 14px;font-weight:800;font-size:.84rem;cursor:pointer;letter-spacing:.4px}
+.qtychip:active{background:#33401F;color:#F7F1E1}
 </style>
 </head>
 <body>
@@ -992,7 +1019,7 @@ function entered() { return !!(visitor || authUser); }
 function show(name) {
   currentView = name;
   VIEWS.forEach((v) => $("view-" + v).classList.toggle("active", v === name));
-  $("bottombar").classList.toggle("show", entered() && name !== "login");
+  $("bottombar").classList.toggle("show", entered());
   $("bb-home").classList.toggle("on", name === "shop" || name === "product" || name === "category");
   $("bb-wish").classList.toggle("on", name === "wishlist");
   $("bb-cart").classList.toggle("on", ["cart", "checkout", "payment", "confirm"].includes(name));
@@ -1299,10 +1326,11 @@ function openProduct(id) {
       </div>
       <div class="qtyrow">
         <span style="font-weight:700">Quantity</span>
-        <div class="stepper"><button id="q-minus">−</button><span id="q-val">1</span><button id="q-plus">+</button></div>
+        <div class="stepper"><button id="q-minus">−</button><input id="q-val" type="number" inputmode="numeric" min="1" max="10000" step="1" value="1" aria-label="Quantity"><button id="q-plus">+</button></div>
+        <span class="qtychips"><button class="qtychip" id="q-add50">+50</button><button class="qtychip" id="q-add100">+100</button></span>
         <span style="color:var(--muted); font-size:.85rem" id="q-unit"></span>
       </div>
-      <div class="srow grand" style="display:flex; justify-content:space-between; font-weight:800; font-size:1.05rem;"><span>Total</span><span id="d-total"></span></div>
+      <div class="srow grand" style="display:flex; justify-content:space-between; font-weight:800; font-size:1.05rem;"><span>Total <small style="font-weight:600; font-size:.75rem; color:var(--muted)">(incl. GST ${gstRate()}%)</small></span><span id="d-total"></span></div>
       <div class="buynowrow">
         <button class="btn ghost" id="d-buy">🛍 Buy Now</button>
         <button class="btn" id="d-add">🛍 Add to Cart</button>
@@ -1336,11 +1364,14 @@ function openProduct(id) {
         <tr><td>Sold By</td><td>Choudhary Paper Tube &amp; Packaging, Surat (Prop. ${CFG.business.owner})</td></tr>
       </table>
     </div>`;
+  const clampQty = (n) => { const v = parseInt(n, 10); return Number.isNaN(v) ? null : Math.min(10000, Math.max(1, v)); };
   const refresh = () => {
     const v = SKU.get(detailSku).variant;
-    $("q-val").textContent = detailQty;
+    const qv = $("q-val");
+    if (qv && document.activeElement !== qv) qv.value = detailQty;
     $("q-unit").textContent = "× " + v.unit;
-    $("d-total").textContent = money(v.price * detailQty);
+    const lineAmt = Math.round(v.price * detailQty * 100) / 100;
+    $("d-total").textContent = money(Math.round((lineAmt + gstOn(lineAmt)) * 100) / 100);
     $("d-mrp").textContent = fmtMrp(v.price);
     $("d-sell").textContent = money(v.price);
     $("d-per").textContent = "per " + v.unit;
@@ -1354,6 +1385,12 @@ function openProduct(id) {
   document.querySelectorAll(".sizeopt").forEach((b) => b.onclick = () => { detailSku = b.dataset.sku; refresh(); });
   $("q-minus").onclick = () => { if (detailQty > 1) detailQty--; refresh(); };
   $("q-plus").onclick = () => { if (detailQty < 10000) detailQty++; refresh(); };
+  $("q-add50").onclick = () => { detailQty = Math.min(10000, detailQty + 50); refresh(); };
+  $("q-add100").onclick = () => { detailQty = Math.min(10000, detailQty + 100); refresh(); };
+  const qInput = $("q-val");
+  qInput.addEventListener("focus", () => qInput.select());
+  qInput.addEventListener("input", () => { const v = clampQty(qInput.value); if (v !== null) { detailQty = v; refresh(); } });
+  qInput.addEventListener("change", () => { const v = clampQty(qInput.value); detailQty = v === null ? 1 : v; qInput.value = detailQty; refresh(); });
   $("d-add").onclick = () => {
     cart[detailSku] = Math.min(10000, (cart[detailSku] || 0) + detailQty);
     saveCart(); updateBadges();
@@ -1414,14 +1451,18 @@ function cartLines() {
   }
   return out;
 }
+function gstRate() { return CFG && CFG.business ? Number(CFG.business.gst_rate) || 0 : 0; }
+/* Prices are GST-exclusive — GST is added on the subtotal, mirroring the server. */
+function gstOn(subtotal) { return Math.round(subtotal * gstRate() / 100 * 100) / 100; }
 function cartTotals(ff) {
   const lines = cartLines();
-  const subtotal = lines.reduce((a, l) => a + l.price * l.qty, 0);
+  const subtotal = Math.round(lines.reduce((a, l) => a + l.price * l.qty, 0) * 100) / 100;
   const delivery = !lines.length || ff === "pickup" ? 0 : (subtotal >= CFG.delivery.free_above ? 0 : CFG.delivery.charge);
-  return { lines, subtotal, delivery, total: subtotal + delivery };
+  const gst = gstOn(subtotal);
+  return { lines, subtotal, gst, delivery, total: Math.round((subtotal + gst + delivery) * 100) / 100 };
 }
 function renderCart() {
-  const { lines, subtotal, delivery, total } = cartTotals(fulfillment);
+  const { lines, subtotal, gst, delivery, total } = cartTotals(fulfillment);
   const box = $("cartlines");
   if (!lines.length) {
     box.innerHTML = `<div class="empty">Your bag is empty.<br><br><button class="btn" id="empty-browse">Browse Products</button></div>`;
@@ -1437,18 +1478,24 @@ function renderCart() {
         <div class="vr">${l.variant_label} · ${money(l.price)} per ${l.unit}</div>
         <div style="font-weight:800; margin-top:4px">${money(l.price * l.qty)}</div>
         <div class="stepper" style="margin-top:7px; display:inline-flex;">
-          <button data-dec="${l.sku}">−</button><span>${l.qty}</span><button data-inc="${l.sku}">+</button>
+          <button data-dec="${l.sku}">−</button><input data-qty="${l.sku}" type="number" inputmode="numeric" min="1" max="10000" step="1" value="${l.qty}" aria-label="Quantity"><button data-inc="${l.sku}">+</button>
         </div>
       </div>
       <button class="btn sm plain" data-del="${l.sku}" style="align-self:flex-start">✕</button>
     </div>`).join("");
   box.querySelectorAll("[data-inc]").forEach((b) => b.onclick = () => { cart[b.dataset.inc]++; saveCart(); updateBadges(); renderCart(); });
+  box.querySelectorAll("[data-qty]").forEach((inp) => inp.addEventListener("change", () => {
+    const s = inp.dataset.qty; const v = parseInt(inp.value, 10);
+    if (Number.isNaN(v) || v < 1) { renderCart(); return; }
+    cart[s] = Math.min(10000, v); saveCart(); updateBadges(); renderCart();
+  }));
   box.querySelectorAll("[data-dec]").forEach((b) => b.onclick = () => { const s = b.dataset.dec; cart[s]--; if (cart[s] <= 0) delete cart[s]; saveCart(); updateBadges(); renderCart(); });
   box.querySelectorAll("[data-del]").forEach((b) => b.onclick = () => { delete cart[b.dataset.del]; saveCart(); updateBadges(); renderCart(); });
   $("cartsummary").style.display = "block";
   $("cartsummary").innerHTML = `
     <div style="font-weight:800; margin-bottom:6px;">PRICE DETAILS</div>
     <div class="srow"><span>Subtotal</span><span>${money(subtotal)}</span></div>
+    <div class="srow"><span>GST (${gstRate()}%)</span><span>${money(gst)}</span></div>
     <div class="srow"><span>Delivery</span><span>${delivery === 0 ? "FREE" : money(delivery)}</span></div>
     <div class="srow grand"><span>Total Amount</span><span>${money(total)}</span></div>
     `;
@@ -1460,12 +1507,13 @@ $("c-quote").onclick = () => openQuote();
 /* ================= CHECKOUT → PAYMENT GATEWAY → ORDER ================= */
 function renderCheckout() {
   const isDraft = draftMode && draft;
-  const { subtotal, delivery, total } = isDraft
-    ? (() => { const lt = draft.price * draft.qty; const del = fulfillment === "pickup" ? 0 : (lt >= CFG.delivery.free_above ? 0 : CFG.delivery.charge); return { subtotal: lt, delivery: del, total: lt + del }; })()
+  const { subtotal, gst, delivery, total } = isDraft
+    ? (() => { const lt = Math.round(draft.price * draft.qty * 100) / 100; const del = fulfillment === "pickup" ? 0 : (lt >= CFG.delivery.free_above ? 0 : CFG.delivery.charge); const g = gstOn(lt); return { subtotal: lt, gst: g, delivery: del, total: Math.round((lt + g + del) * 100) / 100 }; })()
     : cartTotals(fulfillment);
   $("co-summary").innerHTML = `
     ${isDraft ? `<div class="srow"><span><strong>Quoted item:</strong> ${draft.item_label}</span><span>${draft.qty} × ${money(draft.price)}</span></div>` : ""}
     <div class="srow"><span>Items (${isDraft ? draft.qty : cartCount()})</span><span>${money(subtotal)}</span></div>
+    <div class="srow"><span>GST (${gstRate()}%)</span><span>${money(gst)}</span></div>
     <div class="srow"><span>Delivery</span><span>${delivery === 0 ? "FREE" : money(delivery)}</span></div>
     <div class="srow grand"><span>To Pay</span><span>${money(total)}</span></div>`;
   $("ff-opts").innerHTML = `
