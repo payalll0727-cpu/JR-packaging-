@@ -279,10 +279,47 @@ app.get("/api/config-public", (req, res) => {
   });
 });
 
-app.get("/api/announcement", (req, res) => {
-  const row = db.prepare("SELECT value FROM settings WHERE key = 'announcement'").get();
-  if (!row) return res.json({ en: "", hi: "" });
-  try { res.json(JSON.parse(row.value)); } catch { res.json({ en: "", hi: "" }); }
+/* Transient-failure retry for the announcement settings read.
+ * Turso/libsql hiccups are usually momentary, so before degrading to
+ * the empty banner we try up to 3 times (backoff ~150ms, then ~400ms).
+ * Scope: this is the only settings read in the codebase, and every
+ * other route calls db.prepare ad hoc with its own call shape — there
+ * is no shared read helper to extend without changing behaviour
+ * elsewhere, so the retry lives here only. */
+const sleepMs = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
+
+async function readAnnouncementValue() {
+  const delays = [150, 400]; // wait before retry 1 and retry 2
+  let lastErr;
+  for (let attempt = 0; attempt <= delays.length; attempt++) {
+    try {
+      const row = db.prepare("SELECT value FROM settings WHERE key = 'announcement'").get();
+      if (attempt > 0) console.log(`announcement recovered on retry ${attempt}`);
+      return row ? row.value : undefined;
+    } catch (e) {
+      lastErr = e;
+      if (attempt < delays.length) await sleepMs(delays[attempt]);
+    }
+  }
+  throw lastErr;
+}
+
+app.get("/api/announcement", async (req, res) => {
+  // Never 500: the storefront loads this at boot, so any failure here
+  // (DB hiccup included) must degrade to "no announcement", not an error.
+  // The read retries briefly first (see readAnnouncementValue above).
+  try {
+    const value = await readAnnouncementValue();
+    if (value === undefined) return res.json({ en: "", hi: "" });
+    try { res.json(JSON.parse(value)); }
+    catch (e) {
+      console.error("GET /api/announcement: stored value is not valid JSON, serving empty banner:", e.message);
+      res.json({ en: "", hi: "" });
+    }
+  } catch (e) {
+    console.error("GET /api/announcement failed, serving empty banner:", e && e.message ? e.message : e);
+    res.json({ en: "", hi: "" });
+  }
 });
 
 app.get("/api/products", (req, res) => {
