@@ -569,8 +569,10 @@ async function loadLive() {
 
 /* ---------- banner ---------- */
 async function loadBanner() {
-  const r = await fetch("/api/announcement").then((x) => x.json());
-  $("b-en").value = r.en || ""; $("b-hi").value = r.hi || "";
+  try {
+    const r = await fetch("/api/announcement").then((x) => x.json());
+    $("b-en").value = r.en || ""; $("b-hi").value = r.hi || "";
+  } catch (e) { /* banner is optional — never let it break the admin */ }
 }
 $("b-save").onclick = async () => {
   await api("/api/admin/announcement", { method: "PUT", body: JSON.stringify({ en: $("b-en").value, hi: $("b-hi").value }) });

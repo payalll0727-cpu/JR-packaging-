@@ -1768,13 +1768,17 @@ $("t-go").addEventListener("click", async () => {
 
 /* ================= BOOT ================= */
 (async function boot() {
+  // Each boot fetch is independently fail-safe: one bad endpoint (e.g. the
+  // announcement 500 of 28–29 Oct 2026) must never blank the whole shop —
+  // render with whatever loaded. Only a genuinely unusable core payload
+  // (config/catalog) still lands on the error message below.
+  const [c, p, a] = await Promise.all([
+    fetch("/api/config-public").then((r) => r.json()).catch(() => null),
+    fetch("/api/products").then((r) => r.json()).catch(() => null),
+    fetch("/api/announcement").then((r) => r.json()).catch(() => ({ en: "", hi: "" })),
+  ]);
+  CFG = c; CATALOG = p; ANNOUNCE = a || { en: "", hi: "" };
   try {
-    const [c, p, a] = await Promise.all([
-      fetch("/api/config-public").then((r) => r.json()),
-      fetch("/api/products").then((r) => r.json()),
-      fetch("/api/announcement").then((r) => r.json()),
-    ]);
-    CFG = c; CATALOG = p; ANNOUNCE = a;
     for (const prod of CATALOG.products) for (const v of prod.variants) SKU.set(v.sku, { product: prod, variant: v });
     const m = location.pathname.match(/^\/order\/([a-f0-9]{32})$/);
     if (m) {
