@@ -11,7 +11,7 @@
   "products": [
     {
       "category": "Paper Tubes",
-      "description": "Spiral-wound paper tube (danda) — 47 inch length × 25mm diameter. Custom sizes available on quote.",
+      "description": "Spiral-wound paper tube (danda) — 47 inch length × 25mm diameter. Custom sizes available on quote. Sold in bundles — 1 bundle = 50 pcs.",
       "hsn": "",
       "id": "paper-tube-danda",
       "image": "img/paper-tube-danda.jpg",
@@ -19,30 +19,36 @@
       "variants": [
         {
           "label": "200g quality",
-          "price": 7.2,
+          "price": 360,
           "sku": "TUBE-200G",
-          "stock": 10000,
-          "unit": "pc"
+          "stock": 198,
+          "unit": "bundle",
+          "pack_size": 50,
+          "pack_unit": "pcs"
         },
         {
           "label": "250g quality",
-          "price": 9,
+          "price": 450,
           "sku": "TUBE-250G",
-          "stock": 10000,
-          "unit": "pc"
+          "stock": 199,
+          "unit": "bundle",
+          "pack_size": 50,
+          "pack_unit": "pcs"
         },
         {
           "label": "300g quality",
-          "price": 10.8,
+          "price": 540,
           "sku": "TUBE-300G",
-          "stock": 9997,
-          "unit": "pc"
+          "stock": 199,
+          "unit": "bundle",
+          "pack_size": 50,
+          "pack_unit": "pcs"
         }
       ]
     },
     {
       "category": "Clips",
-      "description": "Sturdy white clip for parcel packing.",
+      "description": "Sturdy white clip for parcel packing. Sold in bags — 1 bag = 25 kg.",
       "hsn": "",
       "id": "parcel-packing-clip",
       "image": "img/parcel-packing-clip.jpg",
@@ -50,48 +56,58 @@
       "variants": [
         {
           "label": "Standard",
-          "price": 68,
+          "price": 1700,
           "sku": "CLIP-STD",
-          "stock": 10000,
-          "unit": "kg"
+          "stock": 399,
+          "unit": "bag",
+          "pack_size": 25,
+          "pack_unit": "kg"
         }
       ]
     },
     {
       "category": "BOPP Bags",
-      "description": "Crystal-clear self-seal BOPP bags — size 12 × 17 × 18 inch. Sold per packet of 1000 pcs. Easy peel & seal, super durable.",
+      "description": "Crystal-clear self-seal BOPP bags. Sold in packets — 1 packet = 10 kg. Available sizes: 12×15×16, 12×16×17, 12×17×18, 11×16×17, 11×17×18, 11.5×16×17, 11.5×17×18, 12.5×16×17, 12.5×17×18 inch. Easy peel & seal, super durable.",
       "hsn": "",
       "id": "bopp-bag",
       "image": "img/bopp-bag.jpg",
       "name": "BOPP Bag",
       "variants": [
         {
-          "label": "25 micron — packet of 1000 pcs",
+          "label": "25 micron",
           "price": 1360,
           "sku": "BOPP-25M",
-          "stock": 10000,
-          "unit": "packet"
+          "stock": 9998,
+          "unit": "packet",
+          "pack_size": 10,
+          "pack_unit": "kg"
         },
         {
-          "label": "36 micron — packet of 1000 pcs",
+          "label": "36 micron",
           "price": 1850,
           "sku": "BOPP-36M",
-          "stock": 10000,
-          "unit": "packet"
+          "stock": 9996,
+          "unit": "packet",
+          "pack_size": 10,
+          "pack_unit": "kg"
         },
         {
-          "label": "40 micron — packet of 1000 pcs",
+          "label": "40 micron",
           "price": 1980,
           "sku": "BOPP-40M",
           "stock": 10000,
-          "unit": "packet"
+          "unit": "packet",
+          "pack_size": 10,
+          "pack_unit": "kg"
         },
         {
-          "label": "51 micron — packet of 1000 pcs",
-          "price": 2350,
+          "label": "51 micron",
+          "price": 1910,
           "sku": "BOPP-51M",
           "stock": 10000,
-          "unit": "packet"
+          "unit": "packet",
+          "pack_size": 10,
+          "pack_unit": "kg"
         }
       ]
     },
@@ -114,16 +130,23 @@
     },
     {
       "category": "Strapping Rolls",
-      "description": "Pure virgin PP box strapping roll (patti roll).",
+      "description": "PP box strapping roll (patti roll) — each roll 3.900 kg. Get custom colors and print.",
       "hsn": "",
       "id": "patty-roll-strapping",
       "image": "img/patty-roll-strapping.jpg",
       "name": "Patty Roll / Box Strapping Roll",
       "variants": [
         {
-          "label": "Pure Virgin",
-          "price": 280,
+          "label": "Virgin Quality",
+          "price": 273,
           "sku": "ROLL-VIRGIN",
+          "stock": 10000,
+          "unit": "pc"
+        },
+        {
+          "label": "Super White Quality",
+          "price": 185,
+          "sku": "ROLL-SUPERWHITE",
           "stock": 10000,
           "unit": "pc"
         }

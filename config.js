@@ -1,5 +1,5 @@
 /**
- * Choudhary Paper Tube & Packaging — site configuration
+ * Choudhary Packaging — site configuration
  * =================================================
  * ⚠️  BEFORE GOING LIVE, replace every value marked PLACEHOLDER below.
  * See README.md "Go-live checklist" for the full list.
@@ -7,7 +7,7 @@
 
 module.exports = {
   business: {
-    name: "Choudhary Paper Tube & Packaging",
+    name: "Choudhary Packaging",
     owner: "Jetharam Choudhary",
     address: "", // No shop address shown anywhere on the site (Payal, 2026-10-21).
     phones: ["98798 90987", "99988 20009", "93776 67750"],

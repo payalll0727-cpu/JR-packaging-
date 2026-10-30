@@ -1,5 +1,5 @@
 /**
- * Choudhary Paper Tube & Packaging — backend
+ * Choudhary Packaging — backend
  * Node.js + Express + SQLite (node:sqlite, built into Node 22.5+).
  * All data lives in one SQLite file (see config.server.dbFile).
  *
@@ -148,6 +148,8 @@ try { db.exec("ALTER TABLE visitors ADD COLUMN email TEXT DEFAULT ''"); } catch 
 // this fix have gst_amount = 0; buildInvoice falls back to the legacy
 // computation for those so their invoices stay as originally issued.
 try { db.exec("ALTER TABLE orders ADD COLUMN gst_amount REAL NOT NULL DEFAULT 0"); } catch (e) { /* already there */ }
+// Migration: buyer's GSTIN, entered at checkout to avail GST benefits (2026-10-29).
+try { db.exec("ALTER TABLE orders ADD COLUMN gstin TEXT NOT NULL DEFAULT ''"); } catch (e) { /* already there */ }
 
 const nowIso = () => new Date().toISOString();
 const PHONE_RE = /^[6-9]\d{9}$/; // 10-digit Indian mobile
@@ -196,7 +198,7 @@ function priceOrder(items, fulfillment) {
     subtotal += lineTotal;
     lines.push({
       sku: variant.sku, name: product.name, variant_label: variant.label,
-      unit: variant.unit, price: variant.price, qty, line_total: lineTotal,
+      unit: variant.unit, pack_size: variant.pack_size || 0, pack_unit: variant.pack_unit || "", price: variant.price, qty, line_total: lineTotal,
     });
   }
   subtotal = Math.round(subtotal * 100) / 100;
@@ -505,7 +507,7 @@ function makeQuoteNumber() {
 // Create order: validates input, prices server-side, creates Razorpay order.
 app.post("/api/orders", async (req, res) => {
   try {
-    const { visitor_id, name, phone, address, city, pincode, items, fulfillment, draft_token } = req.body;
+    const { visitor_id, name, phone, address, city, pincode, items, fulfillment, draft_token, gstin } = req.body;
     const cleanName = String(name || "").trim();
     const cleanPhone = String(phone || "").trim().replace(/[\s-]/g, "");
     const ff = fulfillment === "pickup" ? "pickup" : "delivery";
@@ -541,6 +543,10 @@ app.post("/api/orders", async (req, res) => {
       if (!/^\d{6}$/.test(cleanPin)) throw new Error("Enter a valid 6-digit pincode.");
     }
 
+    // Optional buyer GSTIN — printed on the invoice so the buyer can claim GST credit.
+    const cleanGstin = String(gstin || "").trim().toUpperCase().replace(/[\s-]/g, "");
+    if (cleanGstin && !/^\d{2}[A-Z]{5}\d{4}[A-Z][1-9A-Z]Z[0-9A-Z]$/.test(cleanGstin)) throw new Error("Enter a valid GSTIN, or leave it blank.");
+
     const orderNumber = makeOrderNumber(); // UNIQUE constraint guards collisions
     const rzpOrder = await createRazorpayOrder(total, orderNumber);
     const t = nowIso();
@@ -548,12 +554,12 @@ app.post("/api/orders", async (req, res) => {
     try {
       const r = db.prepare(`INSERT INTO orders
         (order_number, visitor_id, name, phone, address, city, pincode, fulfillment, items_json,
-         subtotal, gst_amount, delivery, total, status, payment_status, razorpay_order_id, created_at, updated_at)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'New', 'pending', ?, ?, ?)`)
+         subtotal, gst_amount, delivery, total, status, payment_status, razorpay_order_id, created_at, updated_at, gstin)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 'New', 'pending', ?, ?, ?, ?)`)
         .run(orderNumber, Number(visitor_id) || null, cleanName, cleanPhone,
              ff === "pickup" ? "Shop pickup" : cleanAddr,
              ff === "pickup" ? "" : cleanCity, ff === "pickup" ? "" : cleanPin,
-             ff, JSON.stringify(lines), subtotal, gst, delivery, total, rzpOrder.id, t, t);
+             ff, JSON.stringify(lines), subtotal, gst, delivery, total, rzpOrder.id, t, t, cleanGstin);
       orderId = r.lastInsertRowid;
     } catch (e) {
       if (String(e.message).includes("UNIQUE")) return res.status(409).json({ error: "Order number collision, please retry." });
@@ -678,10 +684,10 @@ function buildInvoice(order) {
   return {
     business: config.business,
     gst_rate: rate,
-    invoice_no: "INV-" + order.order_number,
+    invoice_no: order.order_number,
     date: order.created_at,
     fulfillment: order.fulfillment || "delivery",
-    customer: { name: order.name, phone: order.phone, address: order.address, city: order.city, pincode: order.pincode },
+    customer: { name: order.name, phone: order.phone, address: order.address, city: order.city, pincode: order.pincode, gstin: order.gstin || "" },
     lines, taxable, gst_amount: Math.round((cgst + sgst) * 100) / 100, cgst, sgst, delivery: order.delivery, grand_total: grand,
     payment_status: order.payment_status,
     note: "Prices exclusive of GST. GST charged extra as applicable. Goods once sold will not be taken back.",
@@ -1018,6 +1024,6 @@ app.use(express.static(path.join(__dirname, "public")));
 
 const port = config.server.port;
 app.listen(port, () => {
-  console.log(`Choudhary Paper Tube & Packaging — listening on http://localhost:${port}`);
+  console.log(`Choudhary Packaging — listening on http://localhost:${port}`);
   console.log(`Payments: ${rzpMock() ? "MOCK mode (test)" : "LIVE Razorpay mode"}`);
 });
