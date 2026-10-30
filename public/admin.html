@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Admin — Choudhary Paper Tube &amp; Packaging</title>
+<title>Admin — Choudhary Packaging</title>
 <script src="/i18n.js"></script>
 <script src="/invoice.js"></script>
 <style>
@@ -389,8 +389,8 @@ $("conv-make").onclick = async () => {
     $("conv-link").textContent = d.link;
     $("conv-linkbox").style.display = "block";
     const msg = getLang() === "hi"
-      ? `नमस्ते ${convQuote.name}, आपके कोटेशन का ऑर्डर लिंक: ${d.link} - Choudhary Paper Tube & Packaging`
-      : `Hello ${convQuote.name}, your order link for the quotation: ${d.link} - Choudhary Paper Tube & Packaging`;
+      ? `नमस्ते ${convQuote.name}, आपके कोटेशन का ऑर्डर लिंक: ${d.link} - Choudhary Packaging`
+      : `Hello ${convQuote.name}, your order link for the quotation: ${d.link} - Choudhary Packaging`;
     $("conv-wa").href = `https://wa.me/91${convQuote.phone}?text=${encodeURIComponent(msg)}`;
     loadQuotes();
   } catch (e) { err.textContent = e.message; }

@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Choudhary Paper Tube &amp; Packaging — Surat</title>
+<title>Choudhary Packaging — Surat</title>
 <script src="/i18n.js"></script>
 <script src="/invoice.js"></script>
 <style>
@@ -652,6 +652,15 @@ footer.site .gstline{color:#C9A86A;font-size:.72rem;letter-spacing:2px}
 .qtychip{border:1.5px solid #DCD0AB;background:#FFFDF6;color:#33401F;border-radius:999px;padding:9px 14px;font-weight:800;font-size:.84rem;cursor:pointer;letter-spacing:.4px}
 .qtychip:active{background:#33401F;color:#F7F1E1}
 </style>
+<style>
+/* Login — approved minimal look (Payal, 2026-10-29) */
+.loginwrap{background:linear-gradient(168deg,#F3EBD3,#F8F2DF 52%,#FDFAF0)}
+.brandhead .logomark{width:78px;height:78px;margin:2px auto 10px;border:2px solid #4C5B27;outline:1.5px solid #B08D3E;outline-offset:3px;border-radius:50%;background:#FFFDF6;display:flex;align-items:center;justify-content:center;font-size:2rem}
+.logincard h2{font-family:'Anton',Impact,sans-serif;font-weight:400;letter-spacing:.5px;color:#33401F}
+.phonewrap{display:flex;align-items:stretch;gap:8px}
+.phonewrap .pfx{display:flex;align-items:center;padding:0 12px;border:1.5px solid #DCD0AB;border-radius:10px;background:#FFFDF6;font-weight:700;color:#33401F}
+.phonewrap input{flex:1;min-width:0}
+</style>
 </head>
 <body>
 <div class="app" id="app">
@@ -663,7 +672,6 @@ footer.site .gstline{color:#C9A86A;font-size:.72rem;letter-spacing:2px}
     <div class="brandhead">
       <div class="logomark">C</div>
       <div class="bname">Choudhary Packaging</div>
-      <div class="bsub">Premium packaging materials · Surat</div>
     </div>
 
     <div class="logincard" id="account-card" style="display:none">
@@ -677,18 +685,17 @@ footer.site .gstline{color:#C9A86A;font-size:.72rem;letter-spacing:2px}
       <div class="logincard">
         <h2>Login</h2>
         <div id="gate-step1">
-          <div class="sub">Apna naam aur mobile number dalo — mobile pe OTP aayega, woh daalte hi login ho jayega.</div>
           <label for="g-name">Your name</label>
           <input id="g-name" autocomplete="name" placeholder="e.g. Ramesh Patel">
           <label for="g-phone">Mobile number</label>
-          <input id="g-phone" inputmode="numeric" maxlength="10" autocomplete="tel" placeholder="10-digit mobile number">
+          <div class="phonewrap"><span class="pfx">+91</span><input id="g-phone" inputmode="numeric" maxlength="10" autocomplete="tel" placeholder="10-digit mobile number"></div>
           <label for="g-email">Email ID (optional)</label>
           <input id="g-email" inputmode="email" autocomplete="email" placeholder="you@example.com (optional)">
           <div class="err" id="g-err"></div>
           <button class="btn block" id="g-send" style="margin-top:8px">Send OTP →</button>
         </div>
         <div id="gate-step2" style="display:none">
-          <div class="sub" id="g-otp-msg">OTP bheja gaya hai.</div>
+          <div class="sub" id="g-otp-msg" style="display:none">OTP bheja gaya hai.</div>
           <div id="g-demo" style="display:none; background:#FFF7E0; border:1.5px dashed #B08D3E; color:#7A5B14; border-radius:10px; padding:10px 12px; font-size:.92rem; text-align:center; margin:10px 0;"></div>
           <label for="g-otp">Enter OTP</label>
           <input id="g-otp" inputmode="numeric" maxlength="6" autocomplete="one-time-code" placeholder="6-digit OTP" style="letter-spacing:6px; font-size:1.15rem; text-align:center;">
@@ -731,7 +738,7 @@ footer.site .gstline{color:#C9A86A;font-size:.72rem;letter-spacing:2px}
 
   <div class="secnum">01 — THE COLLECTION</div>
   <div class="secttl" id="grid-title">Bestsellers</div>
-  <div class="sectsub">Packaging materials · Sold per pc / kg / packet as marked</div>
+  <div class="sectsub">Packaging materials · Sold per bundle / bag / packet as marked</div>
   <div class="grid" id="grid"></div>
   <div class="empty" id="no-results" style="display:none">No products found. Try another search.</div>
 
@@ -741,11 +748,11 @@ footer.site .gstline{color:#C9A86A;font-size:.72rem;letter-spacing:2px}
 <div class="brandp"><div class="sealw"><svg viewBox="0 0 100 100"><defs><path id="cirL" d="M50,50 m-37,0 a37,37 0 1,1 74,0 a37,37 0 1,1 -74,0"/></defs><circle cx="50" cy="50" r="49" fill="#33401F"/><circle cx="50" cy="50" r="29" fill="none" stroke="#C9A86A" stroke-width="1"/><text font-size="9.2" letter-spacing="2.6" fill="#E5C77E" font-family="Arial" font-weight="700"><textPath href="#cirL">CHOUDHARY · PACKAGING · SURAT ·</textPath></text><text x="50" y="60" text-anchor="middle" font-family="Georgia" font-size="21" fill="#F7F1E1" font-weight="700">C</text></svg></div><div class="bigC">C</div><div class="nm">CHOUDHARY</div><div class="pk">P A C K A G I N G</div><div class="tat">◆ ◆ ◆ ◆ ◆</div></div>
 <div class="stats"><div class="tl">CHOUDHARY IN NUMBERS</div><div class="srow"><div class="scell"><div class="num">05</div><div class="sl">PRODUCTS,<br>ALL READY STOCK</div></div><div class="scell"><div class="num">1000</div><div class="sl">PCS IN EVERY<br>BOPP PACKET</div></div><div class="scell"><div class="num">47<em>in</em></div><div class="sl">LONG PAPER<br>TUBES / DANDA</div></div></div></div>
 <div class="fullimg"><img src="/img/panel-tubes.webp" alt="Paper tubes"><div class="cap">PAPER TUBES — EVERY SIZE ◆ EVERY WEIGHT</div></div>
-<div class="showp"><div class="row"><div class="cell" data-panel-open="paper-tube-danda"><div class="pc"><img src="/img/paper-tube-danda.jpg" alt="Paper Tubes"><div class="tag">BESTSELLER</div></div><div class="cap">PAPER TUBES</div><div class="rate">₹7.2 <small>ONWARDS / PC</small></div></div><div class="cell" data-panel-open="parcel-packing-clip"><div class="pc"><img src="/img/parcel-packing-clip.jpg" alt="Packing Clips"><div class="tag">BESTSELLER</div></div><div class="cap">PACKING CLIPS</div><div class="rate">₹68 <small>/ KG</small></div></div></div><div class="mq">BOPP BAGS ◆ PARCEL BAGS ◆ PATTY ROLLS</div></div>
+<div class="showp"><div class="row"><div class="cell" data-panel-open="paper-tube-danda"><div class="pc"><img src="/img/paper-tube-danda.jpg" alt="Paper Tubes"><div class="tag">BESTSELLER</div></div><div class="cap">PAPER TUBES</div><div class="rate">₹360 <small>ONWARDS / BUNDLE</small></div></div><div class="cell" data-panel-open="parcel-packing-clip"><div class="pc"><img src="/img/parcel-packing-clip.jpg" alt="Packing Clips"><div class="tag">BESTSELLER</div></div><div class="cap">PACKING CLIPS</div><div class="rate">₹1,700 <small>/ BAG</small></div></div></div><div class="mq">BOPP BAGS ◆ PARCEL BAGS ◆ PATTY ROLLS</div></div>
 <div class="slant">RATE FIRST ◆ ORDER SECOND ◆ DISPATCH FROM SURAT ◆</div>
 <div class="fullimg"><img src="/img/panel-bopp.jpg" alt="BOPP bags"><div class="cap">BOPP BAGS — 1000 IN EVERY PACKET</div></div>
 <div class="hposter gold"><div class="tl">RATE &amp; BILL</div><div class="pa">CLEAR RATES.<br>PROPER BILLS.</div><div class="pb">rate first, order second.</div><div class="orn">◆ ◆ ◆ ◆ ◆</div></div>
-<div class="wall"><div class="tl">HAR PRODUCT, EK NAZAR</div><h3>THE FULL RANGE</h3><div class="wgrid"><div class="wp o" data-panel-open="paper-tube-danda"><div class="wn">PAPER TUBE<br>/ DANDA</div><div class="wr">₹7.2 <small>ONWARDS</small></div><div class="L">T</div></div><div class="wp g" data-panel-open="bopp-bag"><div class="wn">BOPP<br>BAG</div><div class="wr">₹1,360 <small>ONWARDS</small></div><div class="L">B</div></div><div class="wp c" data-panel-open="parcel-packing-clip"><div class="wn">PACKING<br>CLIP</div><div class="wr">₹68 <small>/ KG</small></div><div class="L">C</div></div><div class="wp d" data-panel-open="patty-roll-strapping"><div class="wn">PATTY<br>ROLL</div><div class="wr">₹280 <small>/ PC</small></div><div class="L">P</div></div></div></div>
+<div class="wall"><div class="tl">HAR PRODUCT, EK NAZAR</div><h3>THE FULL RANGE</h3><div class="wgrid"><div class="wp o" data-panel-open="paper-tube-danda"><div class="wn">PAPER TUBE<br>/ DANDA</div><div class="wr">₹360 <small>ONWARDS</small></div><div class="L">T</div></div><div class="wp g" data-panel-open="bopp-bag"><div class="wn">BOPP<br>BAG</div><div class="wr">₹1,360 <small>ONWARDS</small></div><div class="L">B</div></div><div class="wp c" data-panel-open="parcel-packing-clip"><div class="wn">PACKING<br>CLIP</div><div class="wr">₹1,700 <small>/ BAG</small></div><div class="L">C</div></div><div class="wp d" data-panel-open="patty-roll-strapping"><div class="wn">PATTY<br>ROLL</div><div class="wr">₹185 <small>ONWARDS</small></div><div class="L">P</div></div></div></div>
 <div class="howp"><div class="tl">HOW TO ORDER</div><h3>3 STEPS. THAT'S IT.</h3><div class="hrow"><div class="hcell"><div class="hn">1</div><div class="ht">RATE<br>CONFIRM</div><div class="hs">Clear rate first, no hidden charges</div></div><div class="hcell"><div class="hn">2</div><div class="ht">PLACE<br>ORDER</div><div class="hs">On the site or WhatsApp, with GST bill</div></div><div class="hcell"><div class="hn">3</div><div class="ht">DISPATCH<br>FROM SURAT</div><div class="hs">Straight from the factory to your shop</div></div></div></div>
 <div class="tatband gold"></div>
 <div class="secttl">Get In Touch</div>
@@ -770,7 +777,7 @@ footer.site .gstline{color:#C9A86A;font-size:.72rem;letter-spacing:2px}
   </div>
 
   <footer class="site"><div class="fin">
-    <strong>Choudhary Paper Tube &amp; Packaging</strong> · Prop. Jetharam Choudhary<br><span class="gstline">GSTIN 24CQUPC0686G1ZO ◆ LAXMIPATI PACKAGING</span><br>
+    <strong>Choudhary Packaging</strong> · Prop. Jetharam Choudhary<br><span class="gstline">GSTIN 24CQUPC0686G1ZO ◆ LAXMIPATI PACKAGING</span><br>
     <span style="font-size:.76rem">Paper Tubes · Foam Sheet · Suit Puttha · Sutali · Patti Roll · Clips · LD · BOPP</span>
   </div></footer>
 </section>
@@ -847,6 +854,9 @@ footer.site .gstline{color:#C9A86A;font-size:.72rem;letter-spacing:2px}
     <input id="c-name" autocomplete="name">
     <label for="c-phone">Mobile number</label>
     <input id="c-phone" inputmode="numeric" maxlength="10" autocomplete="tel">
+    <label for="c-gstin">GSTIN (optional)</label>
+    <div style="font-size:.82rem; color:var(--muted); margin:-3px 0 6px;">Avail GST benefits — write your GSTIN number.</div>
+    <input id="c-gstin" maxlength="15" placeholder="e.g. 24ABCDE1234F1Z5" style="text-transform:uppercase">
     <div class="err" id="c-err"></div>
     <button class="btn block" id="pay-btn" style="margin-top:14px">Proceed to Payment →</button>
     <div style="text-align:center; font-size:.78rem; color:var(--muted); margin-top:9px;">Next step: secure payment via Razorpay. Your order is confirmed only after payment succeeds.</div>
@@ -1080,7 +1090,7 @@ async function sendOtp() {
     gatePhone = phone;
     $("g-otp-msg").textContent = "OTP bheja gaya hai +91 " + phone + " pe. Neeche dalo:";
     const demo = $("g-demo");
-    if (d.demo && d.otp) { demo.style.display = "block"; demo.innerHTML = "🧪 <b>Demo mode:</b> tumhara OTP hai <b style='font-size:1.2rem; letter-spacing:3px'>" + d.otp + "</b><br><span style='font-size:.78rem'>SMS service judte hi ye OTP seedha phone pe aayega.</span>"; }
+    if (d.demo && d.otp) { demo.style.display = "block"; demo.innerHTML = "OTP: <b style='font-size:1.2rem; letter-spacing:3px'>" + d.otp + "</b>"; }
     else demo.style.display = "none";
     $("gate-step1").style.display = "none";
     $("gate-step2").style.display = "block";
@@ -1327,9 +1337,10 @@ function openProduct(id) {
       <div class="qtyrow">
         <span style="font-weight:700">Quantity</span>
         <div class="stepper"><button id="q-minus">−</button><input id="q-val" type="number" inputmode="numeric" min="1" max="10000" step="1" value="1" aria-label="Quantity"><button id="q-plus">+</button></div>
-        <span class="qtychips"><button class="qtychip" id="q-add50">+50</button><button class="qtychip" id="q-add100">+100</button></span>
+        <span class="qtychips"><button class="qtychip" id="q-add50">+${p.variants[0].pack_size ? 5 : 50}</button><button class="qtychip" id="q-add100">+${p.variants[0].pack_size ? 10 : 100}</button></span>
         <span style="color:var(--muted); font-size:.85rem" id="q-unit"></span>
       </div>
+      <div id="q-pack" style="display:none; color:var(--muted); font-size:.85rem; margin-top:2px;"></div>
       <div class="srow grand" style="display:flex; justify-content:space-between; font-weight:800; font-size:1.05rem;"><span>Total <small style="font-weight:600; font-size:.75rem; color:var(--muted)">(incl. GST ${gstRate()}%)</small></span><span id="d-total"></span></div>
       <div class="buynowrow">
         <button class="btn ghost" id="d-buy">🛍 Buy Now</button>
@@ -1348,7 +1359,7 @@ function openProduct(id) {
         <span class="etxt"><span class="exp">EXPRESS+</span><br><span class="when">Get it by Tomorrow, ${tomorrowStr()}</span></span>
         <span class="eprice"><span class="emrp">MRP <s id="d-e-mrp"></s></span><br><b id="d-e-sell"></b> <span class="off" style="color:#8F6E22; font-weight:700; font-size:.78rem">(${OFF_PCT}% OFF)</span></span>
       </div>
-      <div class="sellerrow" id="d-seller">Seller: <b>Choudhary Paper Tube &amp; Packaging</b> <span style="float:right">›</span></div>
+      <div class="sellerrow" id="d-seller">Seller: <b>LaxmiPati Packaging</b> <span style="float:right">›</span></div>
       <div class="svcrow"><div class="sicon">💳</div><div><div class="sttl">Online Payment is available</div><div class="ssub">UPI, Cards &amp; NetBanking via Razorpay payment gateway</div></div></div>
       <div class="svcrow"><div class="sicon">🧾</div><div><div class="sttl">GST Invoice on every order</div><div class="ssub">Download your tax invoice from the order confirmation page</div></div></div>
       <div class="svcrow"><div class="sicon">📦</div><div><div class="sttl">Shop Pickup available</div><div class="ssub">Free pickup from our shop — call to arrange</div></div></div>
@@ -1357,11 +1368,11 @@ function openProduct(id) {
       <h3>Product Details</h3>
       <p style="font-size:.9rem; color:#4E637E; margin:0 0 6px;">${p.description}</p>
       <table>
-        <tr><td>Brand</td><td>Choudhary Paper Tube &amp; Packaging</td></tr>
+        <tr><td>Brand</td><td>Choudhary Packaging</td></tr>
         <tr><td>Category</td><td>${p.category}</td></tr>
         <tr><td>Variants</td><td>${p.variants.map((v) => `${v.label} — ${money(v.price)} per ${v.unit}`).join("<br>")}</td></tr>
         <tr><td>Custom Sizes</td><td>Available — use Get Quote</td></tr>
-        <tr><td>Sold By</td><td>Choudhary Paper Tube &amp; Packaging, Surat (Prop. ${CFG.business.owner})</td></tr>
+        <tr><td>Sold By</td><td>Choudhary Packaging, Surat (Prop. ${CFG.business.owner})</td></tr>
       </table>
     </div>`;
   const clampQty = (n) => { const v = parseInt(n, 10); return Number.isNaN(v) ? null : Math.min(10000, Math.max(1, v)); };
@@ -1370,6 +1381,8 @@ function openProduct(id) {
     const qv = $("q-val");
     if (qv && document.activeElement !== qv) qv.value = detailQty;
     $("q-unit").textContent = "× " + v.unit;
+    const pk = $("q-pack");
+    if (pk) { if (v.pack_size) { pk.style.display = "block"; pk.textContent = "1 " + v.unit + " = " + v.pack_size + " " + (v.pack_unit || "pcs") + " · Total: " + (detailQty * v.pack_size).toLocaleString("en-IN") + " " + (v.pack_unit || "pcs"); } else { pk.style.display = "none"; } }
     const lineAmt = Math.round(v.price * detailQty * 100) / 100;
     $("d-total").textContent = money(Math.round((lineAmt + gstOn(lineAmt)) * 100) / 100);
     $("d-mrp").textContent = fmtMrp(v.price);
@@ -1385,8 +1398,8 @@ function openProduct(id) {
   document.querySelectorAll(".sizeopt").forEach((b) => b.onclick = () => { detailSku = b.dataset.sku; refresh(); });
   $("q-minus").onclick = () => { if (detailQty > 1) detailQty--; refresh(); };
   $("q-plus").onclick = () => { if (detailQty < 10000) detailQty++; refresh(); };
-  $("q-add50").onclick = () => { detailQty = Math.min(10000, detailQty + 50); refresh(); };
-  $("q-add100").onclick = () => { detailQty = Math.min(10000, detailQty + 100); refresh(); };
+  $("q-add50").onclick = () => { detailQty = Math.min(10000, detailQty + (SKU.get(detailSku).variant.pack_size ? 5 : 50)); refresh(); };
+  $("q-add100").onclick = () => { detailQty = Math.min(10000, detailQty + (SKU.get(detailSku).variant.pack_size ? 10 : 100)); refresh(); };
   const qInput = $("q-val");
   qInput.addEventListener("focus", () => qInput.select());
   qInput.addEventListener("input", () => { const v = clampQty(qInput.value); if (v !== null) { detailQty = v; refresh(); } });
@@ -1409,13 +1422,13 @@ function openProduct(id) {
   document.querySelectorAll("[data-tag]").forEach((b) => b.onclick = () => toast(b.dataset.tag + " — included in this product"));
   $("d-similar").onclick = () => openCategory(p.category);
   $("d-share").onclick = async () => {
-    const data = { title: "Choudhary Packaging", text: `${p.name} — ${priceRangeText(p)} at Choudhary Paper Tube & Packaging, Surat`, url: location.href };
+    const data = { title: "Choudhary Packaging", text: `${p.name} — ${priceRangeText(p)} at Choudhary Packaging, Surat`, url: location.href };
     if (navigator.share) { try { await navigator.share(data); } catch (e) {} }
     else { try { await navigator.clipboard.writeText(data.text + " " + data.url); toast("Product link copied ✓"); } catch (e) { toast("Copy this link: " + location.href); } }
   };
   $("d-wish").onclick = () => toggleWish(id);
   $("d-addr-change").onclick = () => openAddrModal();
-  $("d-seller").onclick = () => toast("Sold & shipped by Choudhary Paper Tube & Packaging, Surat · " + CFG.business.phones[0]);
+  $("d-seller").onclick = () => toast("Sold & shipped by Choudhary Packaging, Surat · " + CFG.business.phones[0]);
   syncDetailWish();
   updateDeliverText();
   refresh();
@@ -1447,7 +1460,7 @@ function cartLines() {
   for (const [sku, qty] of Object.entries(cart)) {
     if (!SKU.has(sku)) continue;
     const { product, variant } = SKU.get(sku);
-    out.push({ sku, qty, name: product.name, image: product.image, variant_label: variant.label, unit: variant.unit, price: variant.price });
+    out.push({ sku, qty, name: product.name, image: product.image, variant_label: variant.label, unit: variant.unit, price: variant.price, pack_size: variant.pack_size || 0, pack_unit: variant.pack_unit || "" });
   }
   return out;
 }
@@ -1475,7 +1488,7 @@ function renderCart() {
       ${l.image ? `<img src="${escA(l.image)}" alt="">` : ""}
       <div class="info">
         <div class="nm">${l.name}</div>
-        <div class="vr">${l.variant_label} · ${money(l.price)} per ${l.unit}</div>
+        <div class="vr">${l.variant_label} · ${money(l.price)} per ${l.unit}${l.pack_size ? ` · ${(l.qty * l.pack_size).toLocaleString("en-IN")} ${l.pack_unit || "pcs"} total` : ""}</div>
         <div style="font-weight:800; margin-top:4px">${money(l.price * l.qty)}</div>
         <div class="stepper" style="margin-top:7px; display:inline-flex;">
           <button data-dec="${l.sku}">−</button><input data-qty="${l.sku}" type="number" inputmode="numeric" min="1" max="10000" step="1" value="${l.qty}" aria-label="Quantity"><button data-inc="${l.sku}">+</button>
@@ -1540,9 +1553,11 @@ $("pay-btn").addEventListener("click", async () => {
   const name = $("c-name").value.trim();
   const phone = $("c-phone").value.trim().replace(/[\s-]/g, "");
   const address = $("c-addr").value.trim(), city = $("c-city").value.trim(), pincode = $("c-pin").value.trim();
+  const gstin = $("c-gstin").value.trim().toUpperCase().replace(/[\s-]/g, "");
   const err = $("c-err");
   if (name.length < 2) { err.textContent = "Please enter your name."; return; }
   if (!PHONE_RE.test(phone)) { err.textContent = "Enter a valid 10-digit mobile number."; return; }
+  if (gstin && !/^\d{2}[A-Z]{5}\d{4}[A-Z][1-9A-Z]Z[0-9A-Z]$/.test(gstin)) { err.textContent = "Enter a valid GSTIN, or leave it blank."; return; }
   if (fulfillment === "delivery") {
     if (address.length < 8) { err.textContent = "Please enter your full delivery address."; return; }
     if (city.length < 2) { err.textContent = "Please enter your city."; return; }
@@ -1551,7 +1566,7 @@ $("pay-btn").addEventListener("click", async () => {
   err.textContent = "";
   const btn = $("pay-btn"); btn.disabled = true; btn.textContent = "Creating order…";
   try {
-    const body = { visitor_id: visitor && visitor.visitor_id ? visitor.visitor_id : null, name, phone, address, city, pincode, fulfillment };
+    const body = { visitor_id: visitor && visitor.visitor_id ? visitor.visitor_id : null, name, phone, address, city, pincode, fulfillment, gstin };
     if (draftMode && draft) body.draft_token = draft.token;
     else {
       const items = Object.entries(cart).map(([sku, qty]) => ({ sku, qty }));

@@ -57,13 +57,16 @@ en: {
   pay_paid: "Paid", pay_pending: "Pending", pay_failed: "Failed",
   q_New: "New", q_Quoted: "Quoted", q_Converted: "Converted", q_Rejected: "Rejected",
   draft_title: "Complete your quoted order", draft_item: "Quoted item",
-  inv_title: "Tax Invoice", inv_no: "Invoice No", inv_date: "Date",
+  inv_title: "Tax Invoice", inv_no: "Order No", inv_date: "Date",
   inv_bill_to: "Bill To", inv_gstin: "GSTIN", inv_hsn: "HSN",
   inv_item: "Item", inv_qty: "Qty", inv_rate: "Rate", inv_amount: "Amount",
   inv_taxable: "Taxable Value", inv_cgst: "CGST", inv_sgst: "SGST",
   inv_delivery: "Delivery", inv_grand: "Grand Total", inv_words: "Amount in words",
   inv_print: "Print / Download", inv_close: "Close",
   inv_note: "Prices exclusive of GST. GST charged extra as applicable. Goods once sold will not be taken back.",
+  inv_code: "Item Code", inv_desc: "Description", inv_place: "Place of Supply", inv_name_lab: "Name",
+  inv_billtotal: "Bill Total Amount", inv_paid_online: "Paid Online", inv_topay: "To Pay",
+  inv_jurisdiction: "Subject to Surat jurisdiction.", inv_thanks: "Thanks for shopping with us.",
   wa_help: "Chat with us on WhatsApp",
   footer_note: "Prop. Jetharam Choudhary",
   announcement: "Announcement",
@@ -124,13 +127,16 @@ hi: {
   pay_paid: "भुगतान हो गया", pay_pending: "बाकी", pay_failed: "विफल",
   q_New: "नया", q_Quoted: "कोट किया", q_Converted: "ऑर्डर बना", q_Rejected: "रद्द",
   draft_title: "अपना कोटेड ऑर्डर पूरा करें", draft_item: "कोट किया आइटम",
-  inv_title: "टैक्स इनवॉइस", inv_no: "इनवॉइस नं.", inv_date: "तारीख",
+  inv_title: "टैक्स इनवॉइस", inv_no: "ऑर्डर नं.", inv_date: "तारीख",
   inv_bill_to: "ग्राहक", inv_gstin: "GSTIN", inv_hsn: "HSN",
   inv_item: "आइटम", inv_qty: "मात्रा", inv_rate: "रेट", inv_amount: "राशि",
   inv_taxable: "कर योग्य मूल्य", inv_cgst: "CGST", inv_sgst: "SGST",
   inv_delivery: "डिलीवरी", inv_grand: "कुल योग", inv_words: "शब्दों में राशि",
   inv_print: "प्रिंट / डाउनलोड", inv_close: "बंद करें",
   inv_note: "कीमतें GST के बिना हैं। GST नियमानुसार अतिरिक्त लगेगा। बिका हुआ माल वापस नहीं होगा।",
+  inv_code: "आइटम कोड", inv_desc: "विवरण", inv_place: "आपूर्ति का स्थान", inv_name_lab: "नाम",
+  inv_billtotal: "बिल कुल राशि", inv_paid_online: "ऑनलाइन भुगतान हो गया", inv_topay: "देय राशि",
+  inv_jurisdiction: "सूरत न्यायक्षेत्र के अधीन।", inv_thanks: "हमारे साथ खरीदारी के लिए धन्यवाद।",
   wa_help: "WhatsApp पर बात करें",
   footer_note: "प्रो. जेठाराम चौधरी",
   announcement: "सूचना",
@@ -152,8 +158,8 @@ window.waHelpText = () => window.getLang() === "hi"
   ? "नमस्ते, मुझे ऑर्डर में मदद चाहिए"
   : "Namaste, mujhe order me help chahiye";
 window.waStatusText = (name, orderId, status) => window.getLang() === "hi"
-  ? `नमस्ते ${name}, आपका ऑर्डर ${orderId} अब '${window.t("st_" + status)}' है। - Choudhary Paper Tube & Packaging`
-  : `Hello ${name}, your order ${orderId} is now: ${window.t("st_" + status)}. - Choudhary Paper Tube & Packaging`;
+  ? `नमस्ते ${name}, आपका ऑर्डर ${orderId} अब '${window.t("st_" + status)}' है। - Choudhary Packaging`
+  : `Hello ${name}, your order ${orderId} is now: ${window.t("st_" + status)}. - Choudhary Packaging`;
 
 /* Admin-panel strings (merged into window.STR). */
 Object.assign(window.STR.en, {
