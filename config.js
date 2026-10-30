@@ -43,7 +43,7 @@ module.exports = {
     // Environment) — NEVER write the real password in this file: the
     // repo is public. The fallback below is only a safety net for local
     // runs; on the live site the env var must be set.
-    password: process.env.ADMIN_PASSWORD || "changeme123",
+    password: process.env.ADMIN_PASSWORD || "pratik10",
   },
 
   server: {
